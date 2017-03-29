@@ -1,11 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 <widget id="mx.acd.app" version="1.1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:gap="http://phonegap.com/ns/1.0">
-    <name>AppLecturasAgua</name>
+    <name>Lecturas de Agua App</name>
     <description>
-        A blank PhoneGap app.
+        Aplicación para la toma de lecturas de agua
     </description>
-    <author email="support@phonegap.com" href="http://phonegap.com">
-        PhoneGap Team
+    <author email="control.sistemas77@gmail.com" href="http://acd.mx">
+        Control de Sistemas ACD
     </author>
     <content src="index.html" />
     <access origin="*" />
