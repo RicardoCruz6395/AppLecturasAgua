@@ -81,6 +81,30 @@
                 alert('Ocurrió un problema con la petición al servidor :(')
             });
 
+            function populateDB(tx) {
+                tx.executeSql('DROP TABLE IF EXISTS DEMO');
+                tx.executeSql('CREATE TABLE IF NOT EXISTS DEMO (data)');
+            }
+
+            // Función 'callback' de error de transacción
+            //
+            function errorCB(err) {
+                console.log("Error procesando SQL: "+err.code);
+            }
+
+            // Función 'callback' de transacción correcta
+            //
+            function successCB() {
+                alert('db creada!')
+            }
+
+            // PhoneGap esta listo
+            //
+            var db;
+            alert('creando db')
+            db = window.openDatabase("DatabaseRicardo", "1.0", "Demo PhoneGap", 200000);
+            db.transaction(populateDB, errorCB, successCB);
+
         },true);
     </script>
 
