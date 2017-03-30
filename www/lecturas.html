@@ -1,20 +1,5 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
-<link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="images/apple-touch-startup-image-640x1096.png">
-<meta name="author" content="acd.mx" />
-<meta name="description" content="ACD Lecturas App" />
-<title>ACD Lecturas</title>
-<link rel="stylesheet" href="css/themes/default/jquery.mobile-1.4.5.css">
-<link type="text/css" rel="stylesheet" href="style.css" />
-<link type="text/css" rel="stylesheet" href="css/colors/blue.css" />
-<link type="text/css" rel="stylesheet" href="css/swipebox.css" />
-</head>
 <body>
 
 <div data-role="page" id="contact" class="secondarypage" data-theme="b">
@@ -86,45 +71,19 @@
           <div class="close_loginpopup_button"><a href="#" data-rel="close"><img src="images/icons/white/menu_close.png" alt="" title="" /></a></div>
           
     </div><!-- /panel -->
+    <script type="text/javascript">
+        document.addEventListener('deviceready', function(){
+            
+            $.post('http://acd.mx/OFICIAL/ACD/AppLecturasAgua/', { _action : 0 }, function(response){
+                $('#divi').html( JSON.stringify(response) )
+            })
+            .fail(function(error){
+                alert('Ocurrió un problema con la petición al servidor :(')
+            });
+
+        },true);
+    </script>
 
 </div><!-- /page -->
-<script src="js/jquery.min.js"></script>
-<script src="js/jquery.mobile-1.4.5.min.js"></script>
-<script type="text/javascript" src="js/jquery.swipebox.js"></script>
-<script src="js/jquery.mobile-custom.js"></script>
-<script type="text/javascript" src="cordova.js"></script>
-<script type="text/javascript">
-
-  $( document ).on( "mobileinit", function() {
-    $.support.cros = true;
-    $.mobile.allowCrossDomainPages = true;
-  });
-
-  $(document).ready(function(){
-
-      
-      $.ajax({
-        crossDomain: true,
-        type : 'GET',
-        url : 'http://acd.mx/OFICIAL/ACD/AppLecturasAgua/',
-        dataType: 'json',
-        data: { _action : 0 },
-        success : function(data){
-          $('#divi').html( JSON.stringify(data) )
-        },
-        error : function(e){
-          alert('error ' + e.message)
-        },
-        statusCode : {
-          404 : function(){
-            alert('Ocurrió un problema con la petición al servidor :(')
-          }
-        }
-
-      });
-
-  });
-
-</script>
 </body>
 </html>
