@@ -10,4 +10,5 @@
     <content src="index.html" />
     <access origin="*" />
     <plugin name="phonegap-plugin-barcodescanner" spec="~6.0.6" />
+    <engine name="android" spec="~6.0.0" />
 </widget>
