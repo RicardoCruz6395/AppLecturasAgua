@@ -40,9 +40,6 @@
 				<li>
 					<a href="subir.html" data-transition="slidefade"><img src="images/icons/white/blog.png" alt="" title="" /><span>Subir</span></a>
 				</li>
-				<li>
-					<a href="" data-transition="slidefade"><img src="images/icons/white/photos.png" alt="" title="" /><span>Salir</span></a>
-				</li>
 			</ul>
 		</nav>
 	</div>
@@ -76,5 +73,34 @@
 <script src="js/jquery.mobile-custom.js"></script>
 <script type="text/javascript" src="cordova.js"></script>
 <script type="text/javascript" src="js/index.js"></script>
+<script type="text/javascript">
+        document.addEventListener('deviceready', function(){
+
+            function populateDB(tx) {
+                tx.executeSql('DROP TABLE IF EXISTS DEMO');
+                tx.executeSql('CREATE TABLE IF NOT EXISTS DEMO (data)');
+            }
+
+            // Función 'callback' de error de transacción
+            //
+            function errorCB(err) {
+                console.log("Error procesando SQL: "+err.code);
+            }
+
+            // Función 'callback' de transacción correcta
+            //
+            function successCB() {
+                alert('db creada!')
+            }
+
+            // PhoneGap esta listo
+            //
+            var db;
+            alert('creando db')
+            db = window.openDatabase("DatabaseRicardo", "1.0", "Demo PhoneGap", 200000);
+            db.transaction(populateDB, errorCB, successCB);
+
+        },true);
+</script>
 </body>
 </html>
