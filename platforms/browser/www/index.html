@@ -32,14 +32,17 @@
 		<nav class="main-nav">
 			<ul>
 				<li>
-					<a href="tomar_lectura.html" data-transition="slidefade"><img src="images/icons/white/team.png" alt="" title="" /><span>Tomar lectura</span></a>
-				</li>
-				<li>
-					<a href="lecturas.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Lecturas</span></a>
-				</li>
-				<li>
-					<a href="subir.html" data-transition="slidefade"><img src="images/icons/white/blog.png" alt="" title="" /><span>Subir</span></a>
-				</li>
+                    <a href="tomar_lectura.html" data-transition="slidefade"><img src="images/icons/white/team.png" alt="" title="" /><span>Scanear</span></a>
+                </li>
+                <li>
+                    <a href="lecturas.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Lecturas</span></a>
+                </li>
+                <li>
+                    <a href="sincronizar.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Sincronizar</span></a>
+                </li>
+                <li>
+                    <a href="subir.html" data-transition="slidefade"><img src="images/icons/white/blog.png" alt="" title="" /><span>Subir</span></a>
+                </li>
 			</ul>
 		</nav>
 	</div>
@@ -77,8 +80,12 @@
         document.addEventListener('deviceready', function(){
 
             function populateDB(tx) {
-                tx.executeSql('DROP TABLE IF EXISTS DEMO');
-                tx.executeSql('CREATE TABLE IF NOT EXISTS DEMO (data)');
+            	tx.executeSql('DROP TABLE IF EXISTS lecturas');
+            	tx.executeSql('DROP TABLE IF EXISTS fraccionamientos');
+            	tx.executeSql('DROP TABLE IF EXISTS zonas');
+                tx.executeSql('CREATE TABLE IF NOT EXISTS lecturas (fracc_id, zona_id, medidor, residente, promedio, anterior, actual, fecha)');
+                tx.executeSql('CREATE TABLE IF NOT EXISTS fraccionamientos (id, nombre)');
+                tx.executeSql('CREATE TABLE IF NOT EXISTS zonas (id, nombre)');
             }
 
             // Función 'callback' de error de transacción
@@ -89,15 +96,15 @@
 
             // Función 'callback' de transacción correcta
             //
-            function successCB() {
-                alert('db creada!')
+            function successCB(tx) {
+                
             }
 
             // PhoneGap esta listo
             //
             var db;
-            alert('creando db')
-            db = window.openDatabase("DatabaseRicardo", "1.0", "Demo PhoneGap", 200000);
+            //alert('creando db')
+            db = window.openDatabase("AppDatabase", "1.0", "Demo PhoneGap", 200000);
             db.transaction(populateDB, errorCB, successCB);
 
         },true);

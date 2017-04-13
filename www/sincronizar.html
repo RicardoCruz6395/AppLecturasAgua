@@ -1,0 +1,116 @@
+<div data-role="page" id="contact" class="secondarypage" data-theme="b">
+    <div data-role="header" data-position="fixed">
+        <div class="nav_left_button"><a href="#" class="nav-toggle"><span></span></a></div>
+        <div class="nav_center_logo">SINCRONIZAR</div>
+        <div class="nav_right_button"><a href="#right-panel"><img src="images/icons/white/user.png" alt="" title="" /></a></div>
+        <div class="clear"></div>
+    </div><!-- /header -->
+    <div role="main" class="ui-content">
+       <div class="pages_maincontent">
+            <div class="form_logo" id="divi"></div>
+            <div class="form_logo">Subir lecturas de la aplicación al sistema.<br>
+            ¡Cuidado! Se reemplazarán las lecturas del sistema con las lecturas de la aplicación</div>
+            <div class="page_content"> 
+                <button id="scanner" class="form_submit">Aplicación &rarr; Sistema</button>
+            </div>
+            <div class="form_logo">Bajar lecturas del sistema a la aplicación </div>
+            <div class="page_content"> 
+                <button id="scanner" class="form_submit">Sistema &rarr; Aplicación</button>
+            </div>
+        </div>
+    </div><!-- /content -->
+    <div data-role="panel" id="left-panel" data-display="reveal" data-position="left">
+        <nav class="main-nav">
+            <ul>
+                <li>
+                    <a href="tomar_lectura.html" data-transition="slidefade"><img src="images/icons/white/team.png" alt="" title="" /><span>Scanear</span></a>
+                </li>
+                <li>
+                    <a href="lecturas.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Lecturas</span></a>
+                </li>
+                <li>
+                    <a href="sincronizar.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Sincronizar</span></a>
+                </li>
+                <li>
+                    <a href="subir.html" data-transition="slidefade"><img src="images/icons/white/blog.png" alt="" title="" /><span>Subir</span></a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+
+    <div data-role="panel" id="right-panel" data-display="reveal" data-position="right">
+        <div class="user_login_info">
+            <div class="user_thumb_container">
+                <img src="images/profile.jpg" alt="" title="" /> 
+                <div class="user_thumb">
+                    <img src="images/author.jpg" alt="" title="" />     
+                </div>  
+            </div>
+            <div class="user_details">
+                <p>Sarah Williams</p>
+            </div>
+            <nav class="user-nav">
+                <ul>
+                    <li><a href="features.html"><img src="images/icons/white/settings.png" alt="" title="" /><span>Settings</span></a></li>
+                    <li><a href="features.html"><img src="images/icons/white/briefcase.png" alt="" title="" /><span>Account</span></a></li>
+                    <li><a href="features.html"><img src="images/icons/white/message.png" alt="" title="" /><span>Messages</span><strong class="yellow">12</strong></a></li>
+                    <li><a href="features.html"><img src="images/icons/white/download.png" alt="" title="" /><span>Downloads</span><strong class="yellow">5</strong></a></li>
+                    <li><a href="index.html"><img src="images/icons/white/lock.png" alt="" title="" /><span>Logout</span></a></li>
+                </ul>
+            </nav>
+        </div>
+        <div class="close_loginpopup_button"><a href="#" data-rel="close"><img src="images/icons/white/menu_close.png" alt="" title="" /></a></div>
+    </div>
+    <script type="text/javascript">
+        document.addEventListener('deviceready', function(){
+            
+            var db = window.openDatabase('AppDatabase', '1.0', 'App Database Lecturas', 200000);
+            var idFracc, fraccNombre, idZona, zonaNombre;
+            var medidor, residente, promedio, anterior, actual;
+            var total = 0;
+            function insertarFraccionamiento(tx){
+                tx.executeSql('INSERT INTO fraccionamientos(id, nombre) VALUES ('+ idFracc +',"'+ fraccNombre +'")');
+            }
+
+            function insertarZona(tx){
+                tx.executeSql('INSERT INTO zonas(id, nombre) VALUES ('+ idZona +',"'+ zonaNombre +'")');
+            }
+
+            function insertarLectura(tx){
+                tx.executeSql('INSERT INTO lecturas(fracc_id, zona_id, medidor, residente, promedio, anterior, actual, fecha) VALUES ('+idFracc+','+idZona+',"'+medidor+'","'+residente+'",'+promedio+','+anterior+','+actual+',"'+'13-04-2017'+'")');
+            }
+
+            $.post('http://acd.mx/OFICIAL/ACD/AppLecturasAgua/', { _action : 0 }, function(lecturas){
+                $.each(lecturas, function(id_fracc, fraccionamiento ){
+                    idFracc = id_fracc; fraccNombre = fraccionamiento.nombre;
+                    db.transaction(insertarFraccionamiento, function(e){console.log("ERROR CODE:"+e.code+":Message:"+e.message)}, function(){});
+                    $.each(fraccionamiento.zonas, function(id_zona, zona ){
+                        idZona = id_zona; zonaNombre = zona.nombre;
+                        db.transaction(insertarZona, function(e){console.log("ERROR CODE:"+e.code+":Message:"+e.message)}, function(){});
+                        console.log(id_zona, zona.nombre);
+                        if(zona.lecturas != undefined){
+                            $.each(zona.lecturas, function(id_lectura, lectura ){
+                                medidor   = lectura[0];
+                                residente = lectura[1];
+                                anterior  = lectura[2];
+                                actual    = lectura[3];
+                                promedio  = lectura[5];
+                                db.transaction(insertarLectura, function(e){console.log("ERROR CODE:"+e.code+":Message:"+e.message)}, function(){});
+                                console.log(id_lectura, lectura);
+                                total++;
+                            });
+                        }
+                    });
+                });
+
+
+                $('#divi').html( 'Se añadieron '+total+' lecturas' );
+            })
+            .fail(function(error){
+                alert('Ocurrió un problema con la petición al servidor :(')
+            });
+
+        },true);
+
+    </script>
+</div><!-- /page -->

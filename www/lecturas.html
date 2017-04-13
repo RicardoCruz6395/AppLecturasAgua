@@ -1,9 +1,4 @@
-<!DOCTYPE html>
-<html>
-<body>
-
 <div data-role="page" id="contact" class="secondarypage" data-theme="b">
-
     <div data-role="header" data-position="fixed">
         <div class="nav_left_button"><a href="#" class="nav-toggle"><span></span></a></div>
         <div class="nav_center_logo">LECTURAS</div>
@@ -14,7 +9,7 @@
     <div role="main" class="ui-content">
 
        <div class="pages_maincontent">
-            <div class="form_logo" id="divi">M E D I D O R</div>   
+            aqui se veran las lecturas  
         </div>
     </div><!-- /content -->
 
@@ -22,17 +17,17 @@
 		<nav class="main-nav">
 			<ul>
 				<li>
-					<a href="tomar_lectura.html" data-transition="slidefade"><img src="images/icons/white/team.png" alt="" title="" /><span>Tomar lectura</span></a>
-				</li>
-				<li>
-					<a href="lecturas.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Lecturas</span></a>
-				</li>
-				<li>
-					<a href="subir.html" data-transition="slidefade"><img src="images/icons/white/blog.png" alt="" title="" /><span>Subir</span></a>
-				</li>
-				<li>
-					<a href="" data-transition="slidefade"><img src="images/icons/white/photos.png" alt="" title="" /><span>Salir</span></a>
-				</li>
+            <a href="tomar_lectura.html" data-transition="slidefade"><img src="images/icons/white/team.png" alt="" title="" /><span>Scanear</span></a>
+        </li>
+        <li>
+            <a href="lecturas.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Lecturas</span></a>
+        </li>
+        <li>
+            <a href="sincronizar.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Sincronizar</span></a>
+        </li>
+        <li>
+            <a href="subir.html" data-transition="slidefade"><img src="images/icons/white/blog.png" alt="" title="" /><span>Subir</span></a>
+        </li>
 			</ul>
 		</nav>
 	</div>
@@ -73,17 +68,8 @@
     </div><!-- /panel -->
     <script type="text/javascript">
         document.addEventListener('deviceready', function(){
-            
-            $.post('http://acd.mx/OFICIAL/ACD/AppLecturasAgua/', { _action : 0 }, function(response){
-                $('#divi').html( JSON.stringify(response) )
-            })
-            .fail(function(error){
-                alert('Ocurrió un problema con la petición al servidor :(')
-            });
 
         },true);
     </script>
 
 </div><!-- /page -->
-</body>
-</html>
