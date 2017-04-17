@@ -79,25 +79,21 @@
 <script type="text/javascript">
         document.addEventListener('deviceready', function(){
 
-            function populateDB(tx) {
+            function crearTablas(tx) {
+            	/*
             	tx.executeSql('DROP TABLE IF EXISTS lecturas');
             	tx.executeSql('DROP TABLE IF EXISTS fraccionamientos');
             	tx.executeSql('DROP TABLE IF EXISTS zonas');
-                tx.executeSql('CREATE TABLE IF NOT EXISTS lecturas (fracc_id, zona_id, medidor, residente, promedio, anterior, actual, fecha)');
+                tx.executeSql('CREATE TABLE IF NOT EXISTS lecturas (zona_id, medidor, residente, promedio, anterior, actual, fecha)');
                 tx.executeSql('CREATE TABLE IF NOT EXISTS fraccionamientos (id, nombre)');
-                tx.executeSql('CREATE TABLE IF NOT EXISTS zonas (id, nombre)');
+                tx.executeSql('CREATE TABLE IF NOT EXISTS zonas (id, fracc_id, nombre)');
+            	*/
             }
 
             // Función 'callback' de error de transacción
             //
             function errorCB(err) {
-                console.log("Error procesando SQL: "+err.code);
-            }
-
-            // Función 'callback' de transacción correcta
-            //
-            function successCB(tx) {
-                
+                alert("No se pudieron iniciar la Base de Datos. Error: "+err.code);
             }
 
             // PhoneGap esta listo
@@ -105,7 +101,7 @@
             var db;
             //alert('creando db')
             db = window.openDatabase("AppDatabase", "1.0", "Demo PhoneGap", 200000);
-            db.transaction(populateDB, errorCB, successCB);
+            db.transaction(crearTablas, errorCB, function(){});
 
         },true);
 </script>

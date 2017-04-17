@@ -7,10 +7,11 @@
     </div><!-- /header -->
 
     <div role="main" class="ui-content">
+      <div class="pages_maincontent">
+        <table border="1" id="lecturas-table">
 
-       <div class="pages_maincontent">
-            aqui se veran las lecturas  
-        </div>
+        </table>      
+      </div>
     </div><!-- /content -->
 
     <div data-role="panel" id="left-panel" data-display="reveal" data-position="left">
@@ -68,6 +69,32 @@
     </div><!-- /panel -->
     <script type="text/javascript">
         document.addEventListener('deviceready', function(){
+            var db = window.openDatabase('AppDatabase', '1.0', 'App Database Lecturas', 200000);
+
+            db.transaction(
+              function(tx){
+                tx.executeSql('SELECT f.nombre nombreF, z.nombre nombreZ, l.medidor, l.anterior, l.actual, (l.actual - l.anterior) consumo, l.promedio FROM lecturas l JOIN zonas z ON l.zona_id = z.id JOIN fraccionamientos f ON z.fracc_id = f.id;',[],
+                  function(tx, results){
+                    var tabla = $('#lecturas-table');
+                    for (var i = 0; i < results.rows.length; i++) {
+                        var lectura = results.rows[i];
+                        tabla.append('<tr><td>'+lectura.medidor+'</td><td>'+lectura.anterior+'</td><td>'+lectura.consumo+'</td><td>'+lectura.promedio+'</td></tr>');
+                    }
+                alert('lecturas mostradas');
+                    
+                  },
+                  function(){
+
+                  });
+              },
+              function(e){
+
+              },
+              function(){
+                alert('lecturas mostradas');
+              }
+            );
+
 
         },true);
     </script>

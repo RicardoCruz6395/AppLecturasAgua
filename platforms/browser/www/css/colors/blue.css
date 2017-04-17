@@ -145,3 +145,7 @@ background-color:#41b1b8;
 .user-nav ul li{
 border-bottom:1px #2a979e solid;
 }
+
+.text-danger {
+	color: #FF0000;
+}

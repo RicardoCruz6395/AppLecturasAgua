@@ -7,16 +7,18 @@
     </div><!-- /header -->
     <div role="main" class="ui-content">
        <div class="pages_maincontent">
-            <div class="form_logo" id="divi"></div>
-            <div class="form_logo">Subir lecturas de la aplicación al sistema.<br>
-            ¡Cuidado! Se reemplazarán las lecturas del sistema con las lecturas de la aplicación</div>
+            <div class="form_logo">Subir lecturas de la aplicación al sistema</div>
             <div class="page_content"> 
-                <button id="scanner" class="form_submit">Aplicación &rarr; Sistema</button>
+                <button id="app2sistema" class="form_submit">Aplicación &rarr; Sistema</button>
             </div>
             <div class="form_logo">Bajar lecturas del sistema a la aplicación </div>
             <div class="page_content"> 
-                <button id="scanner" class="form_submit">Sistema &rarr; Aplicación</button>
+                <button id="sistema2app" class="form_submit">Sistema &rarr; Aplicación</button>
             </div>
+            <div class="form_logo"><span class="text-danger">¡Cuidado!</span><br>
+                Se reemplazarán las lecturas del sistema con las lecturas de la aplicación
+            </div>
+
         </div>
     </div><!-- /content -->
     <div data-role="panel" id="left-panel" data-display="reveal" data-position="left">
@@ -65,50 +67,85 @@
         document.addEventListener('deviceready', function(){
             
             var db = window.openDatabase('AppDatabase', '1.0', 'App Database Lecturas', 200000);
-            var idFracc, fraccNombre, idZona, zonaNombre;
-            var medidor, residente, promedio, anterior, actual;
             var total = 0;
-            function insertarFraccionamiento(tx){
-                tx.executeSql('INSERT INTO fraccionamientos(id, nombre) VALUES ('+ idFracc +',"'+ fraccNombre +'")');
-            }
 
-            function insertarZona(tx){
-                tx.executeSql('INSERT INTO zonas(id, nombre) VALUES ('+ idZona +',"'+ zonaNombre +'")');
-            }
+            $('#sistema2app').bind('click', function(){
+                $this = $(this);
+                ok = confirm('Se reemplazarán las lecturas de la aplicación que no haya subido al sistema. ¿Continuar?');
 
-            function insertarLectura(tx){
-                tx.executeSql('INSERT INTO lecturas(fracc_id, zona_id, medidor, residente, promedio, anterior, actual, fecha) VALUES ('+idFracc+','+idZona+',"'+medidor+'","'+residente+'",'+promedio+','+anterior+','+actual+',"'+'13-04-2017'+'")');
-            }
+                if( ok ){
+                    $.post('http://acd.mx/OFICIAL/ACD/AppLecturasAgua/', { _action : 0 }, function(lecturas){
 
-            $.post('http://acd.mx/OFICIAL/ACD/AppLecturasAgua/', { _action : 0 }, function(lecturas){
-                $.each(lecturas, function(id_fracc, fraccionamiento ){
-                    idFracc = id_fracc; fraccNombre = fraccionamiento.nombre;
-                    db.transaction(insertarFraccionamiento, function(e){console.log("ERROR CODE:"+e.code+":Message:"+e.message)}, function(){});
-                    $.each(fraccionamiento.zonas, function(id_zona, zona ){
-                        idZona = id_zona; zonaNombre = zona.nombre;
-                        db.transaction(insertarZona, function(e){console.log("ERROR CODE:"+e.code+":Message:"+e.message)}, function(){});
-                        console.log(id_zona, zona.nombre);
-                        if(zona.lecturas != undefined){
-                            $.each(zona.lecturas, function(id_lectura, lectura ){
-                                medidor   = lectura[0];
-                                residente = lectura[1];
-                                anterior  = lectura[2];
-                                actual    = lectura[3];
-                                promedio  = lectura[5];
-                                db.transaction(insertarLectura, function(e){console.log("ERROR CODE:"+e.code+":Message:"+e.message)}, function(){});
-                                console.log(id_lectura, lectura);
-                                total++;
-                            });
+                        // Recorrer las lecturas, leyendo primero los fraccionamientos
+                        $.each(lecturas, function(id_fracc, fraccionamiento ){
+
+                            var idFracc     = id_fracc;
+                            var fraccNombre = fraccionamiento.nombre;
+                            
+                            // Insertar los fraccionamientos si no existen, si existen hay que actualizarlos
+                            db.transaction(
+                                function(tx){
+                                    // Insertar el fraccionamiento
+                                    tx.executeSql('INSERT INTO fraccionamientos(id, nombre) VALUES (?,?)', [idFracc, fraccNombre]);
+                                },
+                                function(e){
+                                    console.log("No se pudo agregar el fraccionamiento. Error: "+e.code+"; Message: " + e.message);
+                                },
+                                function(){
+                                    // Recorrer las zonas del fraccionamiento
+                                    $.each(fraccionamiento.zonas, function(id_zona, zona ){
+                                        var idZona      = id_zona;
+                                        var zonaNombre  = zona.nombre;
+                                        
+                                        //Insertar las zonas si no existen, si existen hay que actualizarlas
+                                        db.transaction(
+                                            function(tx){
+                                                tx.executeSql('INSERT INTO zonas(id, fracc_id, nombre) VALUES (?,?,?)', [idZona, idFracc, zonaNombre]);
+                                            },
+                                            function(e){
+                                                console.log("No se pudo agregar la zona. Error: "+e.code+"; Message: " + e.message);
+                                            },
+                                            function(){
+
+                                                // Si la zona tiene lecturas, hay que leerlas
+                                                if(zona.lecturas != undefined){
+                                                    $.each(zona.lecturas, function(id_lectura, lectura ){
+                                                        // Crear un arreglo con toda la información de cada lectura
+                                                        var datos = [ idZona, lectura[0], lectura[1], lectura[5], lectura[2], lectura[3], '2017-04-16' ];
+                                                        // Realizar la trasaccion para insertar la lectura de agua
+                                                        db.transaction(
+                                                            function(tx){
+                                                                tx.executeSql('INSERT INTO lecturas(zona_id, medidor, residente, promedio, anterior, actual, fecha) VALUES (?,?,?,?,?,?,?)', datos);
+                                                            },
+                                                            function(e){
+                                                                console.log("No se pudo agregar la lectura. Error: "+e.code+"; Message: " + e.message);
+                                                            },
+                                                            function(){
+                                                                console.log("se agrego " + id_lectura)
+
+
+                                                            }
+                                                        );
+                                                        total++;
+                                                    });
+                                                }
+                                            }
+                                        );
+                                    });
+                                }
+                            );
+                        });
+                        $this.html('Lecturas sincronizadas');
+                    })
+                    .fail(
+                        function(error){
+                            alert('Ocurrió un problema con la petición al servidor :(')
                         }
-                    });
-                });
-
-
-                $('#divi').html( 'Se añadieron '+total+' lecturas' );
-            })
-            .fail(function(error){
-                alert('Ocurrió un problema con la petición al servidor :(')
+                    );
+                }
             });
+            
+            
 
         },true);
 
