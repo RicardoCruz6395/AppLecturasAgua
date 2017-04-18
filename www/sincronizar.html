@@ -16,9 +16,9 @@
                 <button id="sistema2app" class="form_submit">Sistema &rarr; Aplicación</button>
             </div>
             <div class="form_logo"><span class="text-danger">¡Cuidado!</span><br>
-                Se reemplazarán las lecturas del sistema con las lecturas de la aplicación
+                Estos procesos pueden reemplazar lecturas de agua
             </div>
-
+            <div id="resultado"></div>
         </div>
     </div><!-- /content -->
     <div data-role="panel" id="left-panel" data-display="reveal" data-position="left">
@@ -63,6 +63,7 @@
         </div>
         <div class="close_loginpopup_button"><a href="#" data-rel="close"><img src="images/icons/white/menu_close.png" alt="" title="" /></a></div>
     </div>
+    <script type="text/javascript" src="js/index.js"></script>
     <script type="text/javascript">
         document.addEventListener('deviceready', function(){
             
@@ -74,7 +75,7 @@
                 ok = confirm('Se reemplazarán las lecturas de la aplicación que no haya subido al sistema. ¿Continuar?');
 
                 if( ok ){
-                    $.post('http://acd.mx/OFICIAL/ACD/AppLecturasAgua/', { _action : 0 }, function(lecturas){
+                    $.post('http://app.acd.mx/', { action : 1 }, function(lecturas){
 
                         // Recorrer las lecturas, leyendo primero los fraccionamientos
                         $.each(lecturas, function(id_fracc, fraccionamiento ){
@@ -139,7 +140,12 @@
                     })
                     .fail(
                         function(error){
-                            alert('Ocurrió un problema con la petición al servidor :(')
+                            alert('Ocurrió un problema con la petición al servidor :(');
+                            alert('Status: ' + error.status)
+                            alert('StatusText: ' + error.statusText)
+                            $('#resultado').append(error.responseText);
+                            $('#resultado').append('Status: ' + error.status)
+                            $('#resultado').append(' StatusText: ' + error.statusText)
                         }
                     );
                 }

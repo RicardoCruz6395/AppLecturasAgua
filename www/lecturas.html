@@ -8,30 +8,58 @@
 
     <div role="main" class="ui-content">
       <div class="pages_maincontent">
-        <table border="1" id="lecturas-table">
+        <h2 class="page_title">Lecturas de agua</h2> 
+        <div class="tabs_content"> 
+          <div data-role="tabs" id="tabs">
+            <div data-role="navbar">
+              <ul>
+                <li><a href="#one" class="ui-btn-active">Todas</a></li>
+                <li><a href="#two">Completas</a></li>
+                <li><a href="#three">Faltantes</a></li>
+              </ul>
+            </div>
+            <div id="one">
+              <h2 class="page_title">Andara</h2> 
+              <!--div data-role="collapsible" data-content-theme="false">
+                <h4>Zona 1</h4>
+                <p>I'm the collapsible content. By default I'm closed, but you can click the header to open me.</p>
+              </div-->
+              <ul class="features_list">
 
-        </table>      
-      </div>
+              </ul>
+                      
+            </div>
+            <div id="two">
+                      <h3>Tab two content</h3>
+                      
+            </div>
+            <div id="three">
+                      <h3>Tab three content</h3>
+                      
+            </div>
+          </div>
+        </div>
+       </div> 
     </div><!-- /content -->
 
     <div data-role="panel" id="left-panel" data-display="reveal" data-position="left">
-		<nav class="main-nav">
-			<ul>
-				<li>
-            <a href="tomar_lectura.html" data-transition="slidefade"><img src="images/icons/white/team.png" alt="" title="" /><span>Scanear</span></a>
-        </li>
-        <li>
-            <a href="lecturas.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Lecturas</span></a>
-        </li>
-        <li>
-            <a href="sincronizar.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Sincronizar</span></a>
-        </li>
-        <li>
-            <a href="subir.html" data-transition="slidefade"><img src="images/icons/white/blog.png" alt="" title="" /><span>Subir</span></a>
-        </li>
-			</ul>
-		</nav>
-	</div>
+  		<nav class="main-nav">
+  			<ul>
+  				<li>
+              <a href="tomar_lectura.html" data-transition="slidefade"><img src="images/icons/white/team.png" alt="" title="" /><span>Scanear</span></a>
+          </li>
+          <li>
+              <a href="lecturas.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Lecturas</span></a>
+          </li>
+          <li>
+              <a href="sincronizar.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Sincronizar</span></a>
+          </li>
+          <li>
+              <a href="subir.html" data-transition="slidefade"><img src="images/icons/white/blog.png" alt="" title="" /><span>Subir</span></a>
+          </li>
+  			</ul>
+  		</nav>
+  	</div>
 
     <div data-role="panel" id="right-panel" data-display="reveal" data-position="right">
     
@@ -70,30 +98,35 @@
     <script type="text/javascript">
         document.addEventListener('deviceready', function(){
             var db = window.openDatabase('AppDatabase', '1.0', 'App Database Lecturas', 200000);
-
+            var lista = $('.features_list');
             db.transaction(
               function(tx){
-                tx.executeSql('SELECT f.nombre nombreF, z.nombre nombreZ, l.medidor, l.anterior, l.actual, (l.actual - l.anterior) consumo, l.promedio FROM lecturas l JOIN zonas z ON l.zona_id = z.id JOIN fraccionamientos f ON z.fracc_id = f.id;',[],
+                tx.executeSql('SELECT f.nombre nombreF, z.nombre nombreZ, l.medidor, l.anterior, l.actual, (l.actual - l.anterior) consumo, l.promedio FROM lecturas l JOIN zonas z ON l.zona_id = z.id JOIN fraccionamientos f ON z.fracc_id = f.id ORDER BY l.medidor ASC;',[],
                   function(tx, results){
-                    var tabla = $('#lecturas-table');
+                    var lecturas = [];
+
                     for (var i = 0; i < results.rows.length; i++) {
-                        var lectura = results.rows[i];
-                        tabla.append('<tr><td>'+lectura.medidor+'</td><td>'+lectura.anterior+'</td><td>'+lectura.consumo+'</td><td>'+lectura.promedio+'</td></tr>');
+                        var l = results.rows[i];
+
+                        var medidor = $('<li><a class="ui-link"><span> '+ l.medidor +'</span></a></li>');
+                        lista.append(medidor);
+                        //tabla.append('<tr><td>'+lectura.medidor+'</td><td>'+lectura.anterior+'</td><td>'+lectura.consumo+'</td><td>'+lectura.promedio+'</td></tr>');
                     }
-                alert('lecturas mostradas');
                     
                   },
                   function(){
 
                   });
               },
-              function(e){
+              function(error){
 
               },
               function(){
-                alert('lecturas mostradas');
+
               }
             );
+
+            
 
 
         },true);

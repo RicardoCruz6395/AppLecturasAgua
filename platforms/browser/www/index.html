@@ -77,33 +77,33 @@
 <script type="text/javascript" src="cordova.js"></script>
 <script type="text/javascript" src="js/index.js"></script>
 <script type="text/javascript">
-        document.addEventListener('deviceready', function(){
+    document.addEventListener('deviceready', function(){
+    	var db = window.openDatabase("AppDatabase", "1.0", "Demo PhoneGap", 200000);
+        db.transaction(
+        	function(tx){
+        		tx.executeSql('DROP TABLE IF EXISTS lecturas');
+		    	tx.executeSql('DROP TABLE IF EXISTS fraccionamientos');
+		    	tx.executeSql('DROP TABLE IF EXISTS zonas');
+		        tx.executeSql('CREATE TABLE IF NOT EXISTS lecturas (zona_id, medidor, residente, promedio, anterior, actual, fecha)');
+		        tx.executeSql('CREATE TABLE IF NOT EXISTS fraccionamientos (id, nombre)');
+		        tx.executeSql('CREATE TABLE IF NOT EXISTS zonas (id, fracc_id, nombre)');
+		        tx.executeSql('INSERT INTO fraccionamientos VALUES (1,"Andara")');
+		        tx.executeSql('INSERT INTO zonas VALUES (1, 1, ?)',["Zona 1"]);
+		        tx.executeSql('INSERT INTO zonas VALUES (2, 1, ?)',["Zona 2"]);
+		        tx.executeSql('INSERT INTO lecturas VALUES (1,7899,?,9,100,null,?)',["Ricardo","2017-04-24"]);
+		        tx.executeSql('INSERT INTO lecturas VALUES (2,7999,?,12,120,null,?)',["Ricardo cruzz","2017-04-24"]);
 
-            function crearTablas(tx) {
-            	/*
-            	tx.executeSql('DROP TABLE IF EXISTS lecturas');
-            	tx.executeSql('DROP TABLE IF EXISTS fraccionamientos');
-            	tx.executeSql('DROP TABLE IF EXISTS zonas');
-                tx.executeSql('CREATE TABLE IF NOT EXISTS lecturas (zona_id, medidor, residente, promedio, anterior, actual, fecha)');
-                tx.executeSql('CREATE TABLE IF NOT EXISTS fraccionamientos (id, nombre)');
-                tx.executeSql('CREATE TABLE IF NOT EXISTS zonas (id, fracc_id, nombre)');
-            	*/
-            }
+        	},
+        	function(err){
+        		console.log(err)
+            	alert("No se pudo iniciar la Base de Datos. Error: "+err.code);
+        	},
+        	function(){
+        		//alert('Base de datos iniciada');
+        	}
+        );
 
-            // Función 'callback' de error de transacción
-            //
-            function errorCB(err) {
-                alert("No se pudieron iniciar la Base de Datos. Error: "+err.code);
-            }
-
-            // PhoneGap esta listo
-            //
-            var db;
-            //alert('creando db')
-            db = window.openDatabase("AppDatabase", "1.0", "Demo PhoneGap", 200000);
-            db.transaction(crearTablas, errorCB, function(){});
-
-        },true);
+    },true);
 </script>
 </body>
 </html>
