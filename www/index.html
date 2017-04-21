@@ -77,33 +77,58 @@
 <script type="text/javascript" src="cordova.js"></script>
 <script type="text/javascript" src="js/index.js"></script>
 <script type="text/javascript">
-    document.addEventListener('deviceready', function(){
-    	var db = window.openDatabase("AppDatabase", "1.0", "Demo PhoneGap", 200000);
-        db.transaction(
-        	function(tx){
-        		tx.executeSql('DROP TABLE IF EXISTS lecturas');
-		    	tx.executeSql('DROP TABLE IF EXISTS fraccionamientos');
-		    	tx.executeSql('DROP TABLE IF EXISTS zonas');
-		        tx.executeSql('CREATE TABLE IF NOT EXISTS lecturas (zona_id, medidor, residente, promedio, anterior, actual, fecha)');
-		        tx.executeSql('CREATE TABLE IF NOT EXISTS fraccionamientos (id, nombre)');
-		        tx.executeSql('CREATE TABLE IF NOT EXISTS zonas (id, fracc_id, nombre)');
-		        tx.executeSql('INSERT INTO fraccionamientos VALUES (1,"Andara")');
-		        tx.executeSql('INSERT INTO zonas VALUES (1, 1, ?)',["Zona 1"]);
-		        tx.executeSql('INSERT INTO zonas VALUES (2, 1, ?)',["Zona 2"]);
-		        tx.executeSql('INSERT INTO lecturas VALUES (1,7899,?,9,100,null,?)',["Ricardo","2017-04-24"]);
-		        tx.executeSql('INSERT INTO lecturas VALUES (2,7999,?,12,120,null,?)',["Ricardo cruzz","2017-04-24"]);
 
-        	},
-        	function(err){
-        		console.log(err)
-            	alert("No se pudo iniciar la Base de Datos. Error: "+err.code);
-        	},
-        	function(){
-        		//alert('Base de datos iniciada');
-        	}
-        );
+	var app = {
 
-    },true);
+		db : 
+			window.sqlitePlugin.openDatabase({name : 'LecturasAppDB.db', location : 'default'})
+			//window.openDatabase('LecturasAppDB', '1.0', 'LecturasAppDB', 200000)
+		,
+
+		iniciar : function(){
+			app.db.transaction(app.crearTablas, app.error, app.insertar );
+		},
+
+		crearTablas : function(tx){
+			tx.executeSql('DROP TABLE IF EXISTS lecturas');
+			tx.executeSql('DROP TABLE IF EXISTS fraccionamientos');
+			tx.executeSql('DROP TABLE IF EXISTS zonas');
+			tx.executeSql('CREATE TABLE IF NOT EXISTS lecturas (zona_id, medidor, residente, promedio, anterior, actual, fecha)');
+	        tx.executeSql('CREATE TABLE IF NOT EXISTS fraccionamientos (id, nombre)');
+	        tx.executeSql('CREATE TABLE IF NOT EXISTS zonas (id, fracc_id, nombre)');
+	        console.log('creando tablas');
+	        alert('creando tablas');
+	    },
+
+		insertar : function(){
+			app.db.transaction(app.insertarDatos, app.error, app.exito);
+		},
+
+		insertarDatos : function(tx){
+			tx.executeSql('INSERT INTO fraccionamientos VALUES (1,"Andara")');
+		    tx.executeSql('INSERT INTO zonas VALUES (1, 1, ?)',["Zona 1"]);
+		    tx.executeSql('INSERT INTO zonas VALUES (2, 1, ?)',["Zona 2"]);
+		    tx.executeSql('INSERT INTO lecturas VALUES (1,7899,?,9,100,null,?)',["Ricardo","2017-04-24"]);
+		    tx.executeSql('INSERT INTO lecturas VALUES (2,7999,?,12,120,null,?)',["Ricardo cruzz","2017-04-24"]);
+	        alert('insertando datos');
+		},
+
+		exito : function(){
+			alert('Se insertaron los registros :)');
+		},
+
+		error : function(e){
+			alert('Sucedió un error. Código ' + e.code + ': '+ e.message);
+		}
+
+	};
+
+	document.addEventListener('deviceready', function(){
+		if('addEventListener' in document){
+			app.iniciar();
+		}
+	}, false);
+
 </script>
 </body>
 </html>

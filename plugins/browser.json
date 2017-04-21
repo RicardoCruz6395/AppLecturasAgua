@@ -7,9 +7,19 @@
         "files": {}
     },
     "installed_plugins": {
+        "cordova-plugin-network-information": {
+            "PACKAGE_NAME": "mx.acd.app"
+        },
+        "cordova-sqlite-storage": {
+            "PACKAGE_NAME": "mx.acd.app"
+        },
         "phonegap-plugin-barcodescanner": {
             "PACKAGE_NAME": "mx.acd.app"
         }
     },
-    "dependent_plugins": {}
+    "dependent_plugins": {
+        "cordova-plugin-compat": {
+            "PACKAGE_NAME": "mx.acd.app"
+        }
+    }
 }
