@@ -100,49 +100,34 @@
       var app = {
 
         db : 
-          window.sqlitePlugin.openDatabase({name : 'LecturasAppDB.db', location : 'default'})
-          //window.openDatabase('LecturasAppDB', '1.0', 'LecturasAppDB', 200000)
+          //window.sqlitePlugin.openDatabase({name : 'LecturasAppDB.db'})
+          window.openDatabase('LecturasAppDB.db', '1.0', 'LecturasAppDB', 200000)
         ,
 
         iniciar : function(){
+          app.db.transaction(app.leerLecturas, app.error, app.exito);
+        },
+
+        leerLecturas : function(tx){
+          var sql = 'SELECT f.nombre nombreF, z.nombre nombreZ, l.medidor, l.anterior, l.actual, (l.actual - l.anterior) consumo, l.promedio FROM lecturas l JOIN zonas z ON l.zona_id = z.id JOIN fraccionamientos f ON z.fracc_id = f.id ORDER BY l.medidor ASC;';
+          tx.executeSql(sql,[], app.dibujarLecturas);
+        },
+
+        dibujarLecturas : function(tx, results){
+          var medidores = '',
+          len = results.rows.length;
+
+          for (var i = 0; i < len; i++) {
+              var l = results.rows.item(i);
+              medidores += '<li><a class="ui-link"><span> '+ l.medidor +'</span></a></li>';                        
+          }
+
           var lista = document.getElementById('lista');
-
-            app.db.transaction(
-              function(tx){
-                tx.executeSql('SELECT f.nombre nombreF, z.nombre nombreZ, l.medidor, l.anterior, l.actual, (l.actual - l.anterior) consumo, l.promedio FROM lecturas l JOIN zonas z ON l.zona_id = z.id JOIN fraccionamientos f ON z.fracc_id = f.id ORDER BY l.medidor ASC;',[],
-                  function(tx, results){
-                    var medidores = '', len = results.rows.length;
-
-                    for (var i = 0; i < len; i++) {
-                        var l = results.rows[i];
-                        medidores += '<li><a class="ui-link"><span> '+ l.medidor +'</span></a></li>';                        
-                    }
-
-                    lista.innerHTML = medidores;
-                    
-                  },
-                  function(){
-
-                  });
-              },
-              function(error){
-
-              },
-              function(){
-
-              });
-        },
-
-        leerLecturas : function(){
-
-        },
-
-        dibujarLecturas : function(){
-
+          lista.innerHTML = medidores;
         },
 
         exito : function(){
-
+          alert('Lecturas leidas correctamente');
         },
 
         error : function(e){

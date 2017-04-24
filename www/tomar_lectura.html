@@ -11,14 +11,14 @@
             <div class="page_content"> 
 		            <h2 id="Note"></h2>
                 <div class="contactform">
-                    <form class="cmxform">
-                        <input type="text" name="medidor" id="medidor" value="" class="form_input required" data-role="none" />
-                      <input type="submit" name="submit" class="form_submit" id="submit" data-role="none" value="Buscar" />
+                    <form class="cmxform" action="#">
+                        <input type="text" id="medidor" value="7713" class="form_input required" data-role="none" />
+                        <input type="button" class="form_submit" id="submit" data-role="none" value="Buscar" />
                     </form>
                     <button id="scanner">Scanner QR</button>
                 </div>
           	</div>
-            <div id="datos"></div>
+            <div id="datosMedidor"></div>
         </div>
     </div><!-- /content -->
     <div data-role="panel" id="left-panel" data-display="reveal" data-position="left">
@@ -63,40 +63,163 @@
         </div>
         <div class="close_loginpopup_button"><a href="#" data-rel="close"><img src="images/icons/white/menu_close.png" alt="" title="" /></a></div>
     </div>
+
     <script type="text/javascript">
-        document.addEventListener('deviceready', function(){
-            localStorage.setItem('scanner', 'false');
-            $('#scanner').bind('click', function(){
-                localStorage.setItem('scanner', 'true');
+        var app = {
+
+            db : 
+                //window.sqlitePlugin.openDatabase({name : 'LecturasAppDB.db'})
+                window.openDatabase('LecturasAppDB.db', '1.0', 'LecturasAppDB', 200000)
+            ,
+
+            inputMedidor :
+                document.getElementById('medidor')
+            ,
+
+            botonSubmit :
+                document.getElementById('submit')
+            ,
+
+            datosMedidor :
+                document.getElementById('datosMedidor')
+            ,
+
+            iniciar : function(){
+                var botonScanner = document.getElementById('scanner');
+                botonScanner.addEventListener('click', app.iniciarScanner);
+                app.botonSubmit.addEventListener('click', app.buscarMedidor);
+            },
+
+            iniciarScanner : function(){
                 cordova.plugins.barcodeScanner.scan(
                     function (result) {
-                        $('#medidor').val( result.text )
+                        app.inputMedidor.value( result.text );
+                        app.botonSubmit.click();
                     },
-                    function (error) {
-                        alert("Error de scanner: " + error);
-                    },
+                    app.errorScanner,
                     {
-                    preferFrontCamera : false, // iOS and Android
-                    showFlipCameraButton : true, // iOS and Android
-                    showTorchButton : true, // iOS and Android
-                    torchOn: false, // Android, launch with the torch switched on (if available)
-                    prompt : "Por favor enfoque el QR del medidor", // Android
-                    resultDisplayDuration: 500, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
-                    formats : "QR_CODE,PDF_417", // default: all but PDF_417 and RSS_EXPANDED
-                    orientation : "portrait", // Android only (portrait|landscape), default unset so it rotates with the device
-                    disableAnimations : true, // iOS
-                    disableSuccessBeep: false // iOS
-                  }
-               );
-            });
+                        preferFrontCamera : false, // iOS and Android
+                        showFlipCameraButton : true, // iOS and Android
+                        showTorchButton : true, // iOS and Android
+                        torchOn: false, // Android, launch with the torch switched on (if available)
+                        prompt : "Por favor enfoque el QR del medidor", // Android
+                        resultDisplayDuration: 500, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
+                        formats : "QR_CODE,PDF_417", // default: all but PDF_417 and RSS_EXPANDED
+                        orientation : "portrait", // Android only (portrait|landscape), default unset so it rotates with the device
+                        disableAnimations : true, // iOS
+                        disableSuccessBeep: false // iOS
+                    }
+                );
+            },
 
-        },true);
+            buscarMedidor : function(){
+                var medidor = app.inputMedidor.value;
+                if( medidor != ''){
+
+                    app.db.transaction(function(tx){
+                        tx.executeSql('SELECT * FROM lecturas WHERE medidor = ?;', [medidor], app.evaluarInformacion, app.error);
+                    }, app.error, app.exito);
+
+                }else{
+                    alert('Ingrese un medidor o use el scanner');
+                }
+            },
+
+            evaluarInformacion : function(tx, resultados){
+                var longitud = resultados.rows.length;
+                var info = 'No se encontraron resultados';
+                if( longitud > 0){
+                    if( longitud == 1 ){
+                        var medidor = resultados.rows.item(0);
+                        if( medidor.actual == -1 ){
+                            app.solicitarLectura( medidor );
+                        }else{
+                            app.formarInformacion( resultados );
+
+                        }
+                    }else{
+                        app.formarInformacion( resultados );
+                    }
+                }else{
+                    app.dibujarInformacion( info );
+                }
+            },
+
+            formarInformacion : function(resultados){
+                var longitud = resultados.rows.length;
+                var info = '';
+                for (var i = 0; i < longitud; i++) {
+                    var medidor = resultados.rows.item(i);
+                    info = '<table>';
+                    info += '<tr><td>Medidor:</td><td>'+medidor.medidor+'</td></tr>';
+                    info += '<tr><td>Residente:</td><td>'+medidor.residente+'</td></tr>';
+                    info += '<tr><td>Lectura Anterior:</td><td>'+medidor.anterior+'</td></tr>';
+                    var lecturaActual = (medidor.actual == -1) ? 'Agregar' : medidor.actual + ' Editar';
+                    info += '<tr><td>Lectura Actual:</td><td>'+lecturaActual+'</td></tr>';
+                    var fecha = (medidor.fecha == -1) ? '---' : medidor.fecha ;
+                    info += '<tr><td>Fecha de captura:</td><td>'+fecha+'</td></tr>';
+                    var consumo = (medidor.actual == -1) ? '---' : (medidor.actual - medidor.anterior) ;
+                    info += '<tr><td>Consumo:</td><td>'+consumo+'</td></tr>';
+                    info += '<tr><td>Promedio:</td><td>'+medidor.promedio+'</td></tr>';
+                    info += '</table><br>';
+                }
+                app.dibujarInformacion( info );
+            },
+
+            dibujarInformacion : function( tabla ){
+                app.datosMedidor.innerHTML = tabla;
+            },
+
+            solicitarLectura : function( medidor ){
+                var lectura = prompt('Inserte lectura nueva: ');
+                if( lectura != '' ){
+                    if( lectura >= medidor.anterior ){
+                        app.insertarLectura( medidor, lectura);
+                    }else{
+                        alert('la lectura es menor a la anterior: ' + medidor.anterior);
+                        app.solicitarLectura( medidor );                        
+                    }
+
+                }else{
+                    alert('Ingrese una lectura correcta');
+                    app.solicitarLectura(medidor);
+                }
+            },
+
+            insertarLectura : function(medidor, lectura){
+                app.db.transaction(function(tx){
+                    var f = new Date();
+                    var fecha = f.getFullYear() + '-' + (f.getMonth()+1) + '-' + f.getDate();
+                    tx.executeSql('UPDATE lecturas SET actual = ?, fecha = ? WHERE fk = ?;',[ lectura, fecha, medidor.fk ],
+                        app.exito, app.error);
+                }, app.error, app.buscarMedidor);
+            },
+
+            exito : function(){
+
+            },
+
+            error : function(e){
+                alert('Sucedió un error. Código ' + e.code + ': '+ e.message);
+            },
+
+            errorScanner : function(err){
+                alert('Error de scanner: ' + error);
+            }
+
+        };
 
         document.addEventListener('backbutton', function(){
-            if( localStorage.scanner != 'true' ){
+            /*if( localStorage.scanner == null ){
                 localStorage.setItem('scanner', 'false');
                 window.history.back();
-            }
+            }*/
         },true);
+
+        document.addEventListener('deviceready', function(){
+            if('addEventListener' in document){
+                app.iniciar();
+            }
+        }, false);
     </script>
 </div><!-- /page -->

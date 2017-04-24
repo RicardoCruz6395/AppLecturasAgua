@@ -1,159 +1,210 @@
-<div data-role="page" id="contact" class="secondarypage" data-theme="b">
-    <div data-role="header" data-position="fixed">
-        <div class="nav_left_button"><a href="#" class="nav-toggle"><span></span></a></div>
-        <div class="nav_center_logo">SINCRONIZAR</div>
-        <div class="nav_right_button"><a href="#right-panel"><img src="images/icons/white/user.png" alt="" title="" /></a></div>
-        <div class="clear"></div>
-    </div><!-- /header -->
-    <div role="main" class="ui-content">
-       <div class="pages_maincontent">
-            <div class="form_logo">Subir lecturas de la aplicación al sistema</div>
-            <div class="page_content"> 
-                <button id="app2sistema" class="form_submit">Aplicación &rarr; Sistema</button>
+    <div data-role="page" id="contact" class="secondarypage" data-theme="b">
+        <div data-role="header" data-position="fixed">
+            <div class="nav_left_button"><a href="#" class="nav-toggle"><span></span></a></div>
+            <div class="nav_center_logo">SINCRONIZAR</div>
+            <div class="nav_right_button"><a href="#right-panel"><img src="images/icons/white/user.png" alt="" title="" /></a></div>
+            <div class="clear"></div>
+        </div><!-- /header -->
+        <div role="main" class="ui-content">
+           <div class="pages_maincontent">
+                <div class="form_logo">Subir lecturas de la aplicación al sistema</div>
+                <div class="page_content"> 
+                    <button id="appSistema" class="form_submit">Aplicación &rarr; Sistema</button>
+                </div>
+                <div class="form_logo">Bajar lecturas del sistema a la aplicación </div>
+                <div class="page_content"> 
+                    <button id="sistemaApp" class="form_submit">Sistema &rarr; Aplicación</button>
+                </div>
+                <div class="form_logo"><span class="text-danger">¡Cuidado!</span><br>
+                    Estos procesos pueden reemplazar lecturas de agua
+                </div>
+                <div id="resultado"></div>
             </div>
-            <div class="form_logo">Bajar lecturas del sistema a la aplicación </div>
-            <div class="page_content"> 
-                <button id="sistema2app" class="form_submit">Sistema &rarr; Aplicación</button>
-            </div>
-            <div class="form_logo"><span class="text-danger">¡Cuidado!</span><br>
-                Estos procesos pueden reemplazar lecturas de agua
-            </div>
-            <div id="resultado"></div>
-        </div>
-    </div><!-- /content -->
-    <div data-role="panel" id="left-panel" data-display="reveal" data-position="left">
-        <nav class="main-nav">
-            <ul>
-                <li>
-                    <a href="tomar_lectura.html" data-transition="slidefade"><img src="images/icons/white/team.png" alt="" title="" /><span>Scanear</span></a>
-                </li>
-                <li>
-                    <a href="lecturas.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Lecturas</span></a>
-                </li>
-                <li>
-                    <a href="sincronizar.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Sincronizar</span></a>
-                </li>
-                <li>
-                    <a href="subir.html" data-transition="slidefade"><img src="images/icons/white/blog.png" alt="" title="" /><span>Subir</span></a>
-                </li>
-            </ul>
-        </nav>
-    </div>
-
-    <div data-role="panel" id="right-panel" data-display="reveal" data-position="right">
-        <div class="user_login_info">
-            <div class="user_thumb_container">
-                <img src="images/profile.jpg" alt="" title="" /> 
-                <div class="user_thumb">
-                    <img src="images/author.jpg" alt="" title="" />     
-                </div>  
-            </div>
-            <div class="user_details">
-                <p>Sarah Williams</p>
-            </div>
-            <nav class="user-nav">
+        </div><!-- /content -->
+        <div data-role="panel" id="left-panel" data-display="reveal" data-position="left">
+            <nav class="main-nav">
                 <ul>
-                    <li><a href="features.html"><img src="images/icons/white/settings.png" alt="" title="" /><span>Settings</span></a></li>
-                    <li><a href="features.html"><img src="images/icons/white/briefcase.png" alt="" title="" /><span>Account</span></a></li>
-                    <li><a href="features.html"><img src="images/icons/white/message.png" alt="" title="" /><span>Messages</span><strong class="yellow">12</strong></a></li>
-                    <li><a href="features.html"><img src="images/icons/white/download.png" alt="" title="" /><span>Downloads</span><strong class="yellow">5</strong></a></li>
-                    <li><a href="index.html"><img src="images/icons/white/lock.png" alt="" title="" /><span>Logout</span></a></li>
+                    <li>
+                        <a href="tomar_lectura.html" data-transition="slidefade"><img src="images/icons/white/team.png" alt="" title="" /><span>Scanear</span></a>
+                    </li>
+                    <li>
+                        <a href="lecturas.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Lecturas</span></a>
+                    </li>
+                    <li>
+                        <a href="sincronizar.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Sincronizar</span></a>
+                    </li>
+                    <li>
+                        <a href="subir.html" data-transition="slidefade"><img src="images/icons/white/blog.png" alt="" title="" /><span>Subir</span></a>
+                    </li>
                 </ul>
             </nav>
         </div>
-        <div class="close_loginpopup_button"><a href="#" data-rel="close"><img src="images/icons/white/menu_close.png" alt="" title="" /></a></div>
-    </div>
-    <script type="text/javascript" src="js/index.js"></script>
-    <script type="text/javascript">
-        document.addEventListener('deviceready', function(){
-            
-            var db = window.openDatabase('AppDatabase', '1.0', 'App Database Lecturas', 200000);
-            var total = 0;
 
-            $('#sistema2app').bind('click', function(){
-                $this = $(this);
-                ok = confirm('Se reemplazarán las lecturas de la aplicación que no haya subido al sistema. ¿Continuar?');
+        <div data-role="panel" id="right-panel" data-display="reveal" data-position="right">
+            <div class="user_login_info">
+                <div class="user_thumb_container">
+                    <img src="images/profile.jpg" alt="" title="" /> 
+                    <div class="user_thumb">
+                        <img src="images/author.jpg" alt="" title="" />     
+                    </div>  
+                </div>
+                <div class="user_details">
+                    <p>Sarah Williams</p>
+                </div>
+                <nav class="user-nav">
+                    <ul>
+                        <li><a href="features.html"><img src="images/icons/white/settings.png" alt="" title="" /><span>Settings</span></a></li>
+                        <li><a href="features.html"><img src="images/icons/white/briefcase.png" alt="" title="" /><span>Account</span></a></li>
+                        <li><a href="features.html"><img src="images/icons/white/message.png" alt="" title="" /><span>Messages</span><strong class="yellow">12</strong></a></li>
+                        <li><a href="features.html"><img src="images/icons/white/download.png" alt="" title="" /><span>Downloads</span><strong class="yellow">5</strong></a></li>
+                        <li><a href="index.html"><img src="images/icons/white/lock.png" alt="" title="" /><span>Logout</span></a></li>
+                    </ul>
+                </nav>
+            </div>
+            <div class="close_loginpopup_button"><a href="#" data-rel="close"><img src="images/icons/white/menu_close.png" alt="" title="" /></a></div>
+        </div>
+        <script type="text/javascript">
 
-                if( ok ){
-                    $.post('http://app.acd.mx/', { action : 1 }, function(lecturas){
+            var app = {
 
-                        // Recorrer las lecturas, leyendo primero los fraccionamientos
-                        $.each(lecturas, function(id_fracc, fraccionamiento ){
+                db : 
+                    //window.sqlitePlugin.openDatabase({name : 'LecturasAppDB.db'})
+                    window.openDatabase('LecturasAppDB.db', '1.0', 'LecturasAppDB', 200000)
+                ,
 
-                            var idFracc     = id_fracc;
-                            var fraccNombre = fraccionamiento.nombre;
+                botonSistemaApp :
+                    document.getElementById('sistemaApp')
+                ,
+
+                botonAppSistema :
+                    document.getElementById('appSistema')
+                ,
+
+                iniciar : function(){
+                    app.botonSistemaApp.addEventListener('click', app.sincronizarSistemaApp);
+                    app.botonAppSistema.addEventListener('click', app.sincronizarAppSistema);
+                },
+
+                sincronizarSistemaApp : function(){
+                    ok = confirm('Se reemplazarán las lecturas de la aplicación que no haya subido al sistema. ¿Continuar?');
+                    if( ok ){
+                        var xhr = new XMLHttpRequest();
+                        xhr.onreadystatechange = app.sistemaAppRequest;
+                        xhr.open('GET', 'lecturas.json', true);
+                        xhr.send( null );
+                    }
+                },
+
+                sistemaAppRequest : function(e){
+                    if (this.readyState == 4 && this.status == 200) {
+                        app.vaciarTablas( JSON.parse(this.responseText) );
+                    }
+                },
+
+                sincronizarAppSistema : function(){
+                    alert('Función no disponible');
+                },
+
+                vaciarTablas : function( informacionRecibida ){
+                    app.db.transaction(function(tx){
+                        tx.executeSql('DELETE FROM fraccionamientos');
+                        tx.executeSql('DELETE FROM zonas');
+                        tx.executeSql('DELETE FROM lecturas');
+                    }, app.error, app.guardarMedidoresEnApp(informacionRecibida) );
+
+                },
+
+                guardarMedidoresEnApp : function( fraccionamientos ){
+                    setTimeout(function(){
+                        var sqlFraccionamientos = '',
+                            sqlZonas = '',
+                            sqlMedidores = '';
+                        for (var id_fracc in fraccionamientos ) {
+
+                            // Insertar el fraccionamiento
+                            var fraccionamiento = fraccionamientos[id_fracc];
                             
-                            // Insertar los fraccionamientos si no existen, si existen hay que actualizarlos
-                            db.transaction(
-                                function(tx){
-                                    // Insertar el fraccionamiento
-                                    tx.executeSql('INSERT INTO fraccionamientos(id, nombre) VALUES (?,?)', [idFracc, fraccNombre]);
-                                },
-                                function(e){
-                                    console.log("No se pudo agregar el fraccionamiento. Error: "+e.code+"; Message: " + e.message);
-                                },
-                                function(){
-                                    // Recorrer las zonas del fraccionamiento
-                                    $.each(fraccionamiento.zonas, function(id_zona, zona ){
-                                        var idZona      = id_zona;
-                                        var zonaNombre  = zona.nombre;
-                                        
-                                        //Insertar las zonas si no existen, si existen hay que actualizarlas
-                                        db.transaction(
-                                            function(tx){
-                                                tx.executeSql('INSERT INTO zonas(id, fracc_id, nombre) VALUES (?,?,?)', [idZona, idFracc, zonaNombre]);
-                                            },
-                                            function(e){
-                                                console.log("No se pudo agregar la zona. Error: "+e.code+"; Message: " + e.message);
-                                            },
-                                            function(){
+                            //app.insertarFraccionamiento([ id_fracc, fraccionamiento.nombre ]);
+                            sqlFraccionamientos += ',('+id_fracc+',"'+fraccionamiento.nombre+'")';
+                            // Preguntar si hay zonas en el fraccionamiento
+                            if( typeof fraccionamiento.zonas === "object"){
+                                var zonas = fraccionamiento.zonas;
+                                for (var id_zona in zonas ) {
+                                    // Insertar zona del fraccionamiento
+                                    var zona = zonas[id_zona];
+                                    
+                                    //app.insertarZona([ id_zona, id_fracc, zona.nombre ]);
+                                    sqlZonas += ',('+id_zona+','+id_fracc+',"'+zona.nombre+'")';
+                                    // Preguntar si la zona tiene medidores
+                                    if( typeof zona.lecturas === "object"){
+                                        var lecturas = zona.lecturas;
+                                        for (var fk_residente in lecturas ) {
+                                            // Insertar medidor de la zona
+                                            /* 0 -> Medidor
+                                               1 -> Nombre de residente
+                                               2 -> Lectura anterior
+                                               3 -> Lectura nueva
+                                               4 -> Consumo
+                                               5 -> Promedio
+                                               6 -> Diferencia
+                                               7 -> Fecha
+                                               8 -> Hora
+                                            */
+                                            var medidor = lecturas[ fk_residente ];
+                                            var datos = [ fk_residente, id_zona, medidor[0], medidor[1], medidor[5], medidor[2], medidor[3], medidor[7] ];
+                                            //app.insertarMedidor( datos );
+                                            sqlMedidores += ',('+datos[0]+','+datos[1]+',"'+datos[2]+'","'+datos[3]+'",'+datos[4]+','+datos[5]+','+datos[6]+','+datos[7]+')';
+                                        }
 
-                                                // Si la zona tiene lecturas, hay que leerlas
-                                                if(zona.lecturas != undefined){
-                                                    $.each(zona.lecturas, function(id_lectura, lectura ){
-                                                        // Crear un arreglo con toda la información de cada lectura
-                                                        var datos = [ idZona, lectura[0], lectura[1], lectura[5], lectura[2], lectura[3], '2017-04-16' ];
-                                                        // Realizar la trasaccion para insertar la lectura de agua
-                                                        db.transaction(
-                                                            function(tx){
-                                                                tx.executeSql('INSERT INTO lecturas(zona_id, medidor, residente, promedio, anterior, actual, fecha) VALUES (?,?,?,?,?,?,?)', datos);
-                                                            },
-                                                            function(e){
-                                                                console.log("No se pudo agregar la lectura. Error: "+e.code+"; Message: " + e.message);
-                                                            },
-                                                            function(){
-                                                                console.log("se agrego " + id_lectura)
+                                    }
 
-
-                                                            }
-                                                        );
-                                                        total++;
-                                                    });
-                                                }
-                                            }
-                                        );
-                                    });
                                 }
-                            );
-                        });
-                        $this.html('Lecturas sincronizadas');
-                    })
-                    .fail(
-                        function(error){
-                            alert('Ocurrió un problema con la petición al servidor :(');
-                            alert('Status: ' + error.status)
-                            alert('StatusText: ' + error.statusText)
-                            $('#resultado').append(error.responseText);
-                            $('#resultado').append('Status: ' + error.status)
-                            $('#resultado').append(' StatusText: ' + error.statusText)
+
+                            }
                         }
-                    );
+
+                        app.insertarFraccionamientos(sqlFraccionamientos, sqlZonas, sqlMedidores);
+                    }, 3000);
+                },
+
+                insertarFraccionamientos : function( fraccionamientos, zonas, medidores ){
+                    var cadena = fraccionamientos.substring(1);
+                    app.db.transaction(function(tx){
+                        tx.executeSql('INSERT INTO fraccionamientos(id, nombre) VALUES ' + cadena);
+                    }, app.error, app.insertarZonas(zonas, medidores) );
+                },
+
+                insertarZonas : function( zonas, medidores ){
+                    var cadena = zonas.substring(1);
+                    app.db.transaction(function(tx){
+                        tx.executeSql('INSERT INTO zonas(id, fracc_id, nombre) VALUES ' + cadena);
+                    }, app.error, app.insertarMedidores(medidores) );
+
+                },
+
+                insertarMedidores : function( medidores ){
+                    var cadena = medidores.substring(1);
+                    app.db.transaction(function(tx){
+                        tx.executeSql('INSERT INTO lecturas(fk, zona_id, medidor, residente, promedio, anterior, actual, fecha) VALUES ' + cadena);
+                    }, app.error, app.exito);
+                },
+
+                error : function(e){
+                    alert('Sucedió un error. Código ' + e.code + ': '+ e.message);
+                },
+
+                exito : function(){
+                    alert('Lecturas del Sistema a la Aplicación sincronizadas correctamente! ')
                 }
-            });
-            
-            
 
-        },true);
+            };
 
-    </script>
-</div><!-- /page -->
+            
+            document.addEventListener('deviceready', function(){
+                if('addEventListener' in document){
+                    app.iniciar();
+                }
+            }, false);
+
+        </script>
+    </div><!-- /page -->

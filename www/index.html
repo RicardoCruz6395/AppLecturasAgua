@@ -81,40 +81,25 @@
 	var app = {
 
 		db : 
-			window.sqlitePlugin.openDatabase({name : 'LecturasAppDB.db', location : 'default'})
-			//window.openDatabase('LecturasAppDB', '1.0', 'LecturasAppDB', 200000)
+			//window.sqlitePlugin.openDatabase({name : 'LecturasAppDB.db'})
+			window.openDatabase('LecturasAppDB.db', '1.0', 'LecturasAppDB', 200000)
 		,
 
 		iniciar : function(){
-			app.db.transaction(app.crearTablas, app.error, app.insertar );
+			app.db.transaction(app.crearTablas, app.error, app.exito );
 		},
 
 		crearTablas : function(tx){
-			tx.executeSql('DROP TABLE IF EXISTS lecturas');
 			tx.executeSql('DROP TABLE IF EXISTS fraccionamientos');
 			tx.executeSql('DROP TABLE IF EXISTS zonas');
-			tx.executeSql('CREATE TABLE IF NOT EXISTS lecturas (zona_id, medidor, residente, promedio, anterior, actual, fecha)');
+			tx.executeSql('DROP TABLE IF EXISTS lecturas');
 	        tx.executeSql('CREATE TABLE IF NOT EXISTS fraccionamientos (id, nombre)');
 	        tx.executeSql('CREATE TABLE IF NOT EXISTS zonas (id, fracc_id, nombre)');
-	        console.log('creando tablas');
-	        alert('creando tablas');
+			tx.executeSql('CREATE TABLE IF NOT EXISTS lecturas (fk, zona_id, medidor, residente, promedio, anterior, actual, fecha)');
 	    },
 
-		insertar : function(){
-			app.db.transaction(app.insertarDatos, app.error, app.exito);
-		},
-
-		insertarDatos : function(tx){
-			tx.executeSql('INSERT INTO fraccionamientos VALUES (1,"Andara")');
-		    tx.executeSql('INSERT INTO zonas VALUES (1, 1, ?)',["Zona 1"]);
-		    tx.executeSql('INSERT INTO zonas VALUES (2, 1, ?)',["Zona 2"]);
-		    tx.executeSql('INSERT INTO lecturas VALUES (1,7899,?,9,100,null,?)',["Ricardo","2017-04-24"]);
-		    tx.executeSql('INSERT INTO lecturas VALUES (2,7999,?,12,120,null,?)',["Ricardo cruzz","2017-04-24"]);
-	        alert('insertando datos');
-		},
-
 		exito : function(){
-			alert('Se insertaron los registros :)');
+			//alert('Base de Datos iniciada');
 		},
 
 		error : function(e){
