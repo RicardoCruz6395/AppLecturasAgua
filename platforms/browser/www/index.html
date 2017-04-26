@@ -1,119 +1,118 @@
 <!DOCTYPE html>
 <html>
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black">
-<link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
-<link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="images/apple-touch-startup-image-640x1096.png">
-<meta name="author" content="acd.mx" />
-<meta name="description" content="ACD Lecturas App" />
-<title>ACD Lecturas</title>
-<link rel="stylesheet" href="css/themes/default/jquery.mobile-1.4.5.css">
-<link type="text/css" rel="stylesheet" href="style.css" />
-<link type="text/css" rel="stylesheet" href="css/colors/blue.css" />
-<link type="text/css" rel="stylesheet" href="css/swipebox.css" />
-</head>
-<body>
-
-<div data-role="page" id="homepage" data-theme="b">
-	<div role="main" class="ui-content">
-		<div class="logo_container">
-			<div class="logo">
-			<img src="images/logo.png" alt="biotic" title="biotic" />
-			<h2>ACD Lecturas</h2>
-			<span>Más Allá De Tus Expectativas</span>						
-			</div>					 
-		</div>
-		<div class="slide_info">&larr; DESLICE A LOS LADOS &rarr;</div>
-	</div>
-	<div data-role="panel" id="left-panel" data-display="reveal" data-position="left">
-		<nav class="main-nav">
-			<ul>
-				<li>
-                    <a href="tomar_lectura.html" data-transition="slidefade"><img src="images/icons/white/team.png" alt="" title="" /><span>Scanear</span></a>
-                </li>
-                <li>
-                    <a href="lecturas.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Lecturas</span></a>
-                </li>
-                <li>
-                    <a href="sincronizar.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Sincronizar</span></a>
-                </li>
-                <li>
-                    <a href="subir.html" data-transition="slidefade"><img src="images/icons/white/blog.png" alt="" title="" /><span>Subir</span></a>
-                </li>
-			</ul>
-		</nav>
-	</div>
-	<div data-role="panel" id="right-panel" data-display="reveal" data-position="right">
-		<div class="user_login_info">
-			<div class="user_thumb_container">
-				<img src="images/profile.jpg" alt="" title="" /> 
-				<div class="user_thumb">
-					<img src="images/author.jpg" alt="" title="" />	 
-				</div>  
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black">
+		<link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
+		<link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="images/apple-touch-startup-image-640x1096.png">
+		<meta name="author" content="acd.mx" />
+		<meta name="description" content="ACD Lecturas App" />
+		<title>ACD Lecturas</title>
+		<link rel="stylesheet" href="css/themes/default/jquery.mobile-1.4.5.css">
+		<link type="text/css" rel="stylesheet" href="style.css" />
+		<link type="text/css" rel="stylesheet" href="css/colors/blue.css" />
+		<link type="text/css" rel="stylesheet" href="css/swipebox.css" />
+		<script src="js/jquery.min.js"></script>
+		<script src="js/jquery.mobile-1.4.5.min.js"></script>
+		<script type="text/javascript" src="js/jquery.swipebox.js"></script>
+		<script src="js/jquery.mobile-custom.js"></script>
+		<script type="text/javascript" src="cordova.js"></script>
+		<script type="text/javascript" src="js/index.js"></script>
+	</head>
+	<body>
+		<div data-role="page" id="homepage" data-theme="b">
+			<div role="main" class="ui-content">
+				<div class="logo_container">
+					<div class="logo">
+					<img src="images/logo.png" alt="biotic" title="biotic" />
+					<h2>ACD Lecturas</h2>
+					<span>Más Allá De Tus Expectativas</span>						
+					</div>					 
+				</div>
+				<div class="slide_info">&larr; DESLICE A LOS LADOS &rarr;</div>
 			</div>
-			<div class="user_details">
-				<p>Sarah Williams</p>
+			<div data-role="panel" id="left-panel" data-display="reveal" data-position="left">
+				<nav class="main-nav">
+					<ul>
+						<li>
+		                    <a href="tomar_lectura.html" data-transition="slidefade"><img src="images/icons/white/team.png" alt="" title="" /><span>Scanear</span></a>
+		                </li>
+		                <li>
+		                    <a href="lecturas.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Lecturas</span></a>
+		                </li>
+		                <li>
+		                    <a href="sincronizar.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Sincronizar</span></a>
+		                </li>
+		                <li>
+		                    <a href="contact.html" data-transition="slidefade"><img src="images/icons/white/blog.png" alt="" title="" /><span>Subir</span></a>
+		                </li>
+					</ul>
+				</nav>
 			</div>
-			<nav class="user-nav">
-				<ul>
-					<li><a href="features.html"><img src="images/icons/white/settings.png" alt="" title="" /><span>Settings</span></a></li>
-					<li><a href="features.html"><img src="images/icons/white/briefcase.png" alt="" title="" /><span>Account</span></a></li>
-					<li><a href="features.html"><img src="images/icons/white/message.png" alt="" title="" /><span>Messages</span><strong class="yellow">12</strong></a></li>
-					<li><a href="features.html"><img src="images/icons/white/download.png" alt="" title="" /><span>Downloads</span><strong class="yellow">5</strong></a></li>
-					<li><a href="index.html"><img src="images/icons/white/lock.png" alt="" title="" /><span>Logout</span></a></li>
-				</ul>
-			</nav>
+			<div data-role="panel" id="right-panel" data-display="reveal" data-position="right">
+				<div class="user_login_info">
+					<div class="user_thumb_container">
+						<img src="images/profile.jpg" alt="" title="" /> 
+						<div class="user_thumb">
+							<img src="images/author.jpg" alt="" title="" />	 
+						</div>  
+					</div>
+					<div class="user_details">
+						<p>Sarah Williams</p>
+					</div>
+					<nav class="user-nav">
+						<ul>
+							<li><a href="features.html"><img src="images/icons/white/settings.png" alt="" title="" /><span>Settings</span></a></li>
+							<li><a href="features.html"><img src="images/icons/white/briefcase.png" alt="" title="" /><span>Account</span></a></li>
+							<li><a href="features.html"><img src="images/icons/white/message.png" alt="" title="" /><span>Messages</span><strong class="yellow">12</strong></a></li>
+							<li><a href="features.html"><img src="images/icons/white/download.png" alt="" title="" /><span>Downloads</span><strong class="yellow">5</strong></a></li>
+							<li><a href="index.html"><img src="images/icons/white/lock.png" alt="" title="" /><span>Logout</span></a></li>
+						</ul>
+					</nav>
+				</div>
+				<div class="close_loginpopup_button"><a href="#" data-rel="close"><img src="images/icons/white/menu_close.png" alt="" title="" /></a></div>  
+			</div>
+			<script type="text/javascript">
+
+				var app = {
+
+					db : 
+						//window.sqlitePlugin.openDatabase({name : 'LecturasAppDB.db'})
+						window.openDatabase('LecturasAppDB.db', '1.0', 'LecturasAppDB', 200000)
+					,
+
+					iniciar : function(){
+						app.db.transaction(app.crearTablas, app.error, app.exito );
+					},
+
+					crearTablas : function(tx){
+						tx.executeSql('DROP TABLE IF EXISTS fraccionamientos');
+						tx.executeSql('DROP TABLE IF EXISTS zonas');
+						tx.executeSql('DROP TABLE IF EXISTS lecturas');
+				        tx.executeSql('CREATE TABLE IF NOT EXISTS fraccionamientos (id, nombre)');
+				        tx.executeSql('CREATE TABLE IF NOT EXISTS zonas (id, fracc_id, nombre)');
+						tx.executeSql('CREATE TABLE IF NOT EXISTS lecturas (fk, zona_id, medidor, residente, promedio, anterior, actual, fecha)');
+				    },
+
+					exito : function(){
+						//alert('Base de Datos iniciada');
+					},
+
+					error : function(e){
+						alert('Sucedió un error. Código ' + e.code + ': '+ e.message);
+					}
+
+				};
+
+				document.addEventListener('deviceready', function(){
+					if('addEventListener' in document){
+						app.iniciar();
+					}
+				}, false);
+
+			</script>
 		</div>
-		<div class="close_loginpopup_button"><a href="#" data-rel="close"><img src="images/icons/white/menu_close.png" alt="" title="" /></a></div>  
-	</div>
-</div>
-<script src="js/jquery.min.js"></script>
-<script src="js/jquery.mobile-1.4.5.min.js"></script>
-<script type="text/javascript" src="js/jquery.swipebox.js"></script>
-<script src="js/jquery.mobile-custom.js"></script>
-<script type="text/javascript" src="cordova.js"></script>
-<script type="text/javascript" src="js/index.js"></script>
-<script type="text/javascript">
-
-	var app = {
-
-		db : 
-			//window.sqlitePlugin.openDatabase({name : 'LecturasAppDB.db'})
-			window.openDatabase('LecturasAppDB.db', '1.0', 'LecturasAppDB', 200000)
-		,
-
-		iniciar : function(){
-			app.db.transaction(app.crearTablas, app.error, app.exito );
-		},
-
-		crearTablas : function(tx){
-			tx.executeSql('DROP TABLE IF EXISTS fraccionamientos');
-			tx.executeSql('DROP TABLE IF EXISTS zonas');
-			tx.executeSql('DROP TABLE IF EXISTS lecturas');
-	        tx.executeSql('CREATE TABLE IF NOT EXISTS fraccionamientos (id, nombre)');
-	        tx.executeSql('CREATE TABLE IF NOT EXISTS zonas (id, fracc_id, nombre)');
-			tx.executeSql('CREATE TABLE IF NOT EXISTS lecturas (fk, zona_id, medidor, residente, promedio, anterior, actual, fecha)');
-	    },
-
-		exito : function(){
-			//alert('Base de Datos iniciada');
-		},
-
-		error : function(e){
-			alert('Sucedió un error. Código ' + e.code + ': '+ e.message);
-		}
-
-	};
-
-	document.addEventListener('deviceready', function(){
-		if('addEventListener' in document){
-			app.iniciar();
-		}
-	}, false);
-
-</script>
-</body>
+	</body>
 </html>

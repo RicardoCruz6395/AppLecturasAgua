@@ -13,7 +13,7 @@
         "phonegap-plugin-barcodescanner": {
             "PACKAGE_NAME": "mx.acd.app"
         },
-        "cordova-sqlite-storage": {
+        "cordova-plugin-whitelist": {
             "PACKAGE_NAME": "mx.acd.app"
         }
     },

@@ -8,8 +8,14 @@
         Control de Sistemas ACD
     </author>
     <content src="index.html" />
-    <access origin="*" />
     <plugin name="phonegap-plugin-barcodescanner" spec="~6.0.6" />
     <engine name="android" spec="~6.0.0" />
-    <plugin name="cordova-sqlite-storage" spec="~2.0.3" />
+    <plugin name="cordova-plugin-whitelist" spec="1" />
+    <platform name="android">
+        <allow-intent href="market:*" />
+        <access origin="*" />
+        <allow-intent href="*" />
+        <allow-navigation href="*" />
+    </platform>
+    <engine name="browser" spec="~4.1.0" />
 </widget>
