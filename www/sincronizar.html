@@ -7,7 +7,7 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
         <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
         <link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="images/apple-touch-startup-image-640x1096.png">
-        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+        <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: ; img-src 'self' data: content:;  style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
         <meta name="author" content="acd.mx" />
         <meta name="description" content="ACD Lecturas App" />
         <title>ACD Lecturas</title>
@@ -112,16 +112,18 @@
                     sincronizarSistemaApp : function(){
                         ok = confirm('Se reemplazarán las lecturas de la aplicación que no haya subido al sistema. ¿Continuar?');
                         if( ok ){
-                            var xhr = new XMLHttpRequest();
-                            xhr.open('GET', '//app.acd.mx', true);
-                            xhr.send( null );
-                            xhr.onreadystatechange = app.sistemaAppRequest;
-                        }
-                    },
-
-                    sistemaAppRequest : function(e){
-                        if (this.readyState == 4 && this.status == 200) {
-                            app.vaciarTablas( JSON.parse(this.responseText) );
+                            var request = $.ajax({
+                                type: "GET" ,
+                                crossDomain: true,
+                                url: '//app.acd.mx/',
+                                dataType : 'json'
+                            });
+                            request.done(function (response, textStatus, jqXHR){
+                                app.vaciarTablas( response );
+                            });
+                            request.fail(function (jqXHR, textStatus, errorThrown){
+                                alert('Error en petición: ' + textStatus);
+                            });
                         }
                     },
 
@@ -135,7 +137,6 @@
                             tx.executeSql('DELETE FROM zonas');
                             tx.executeSql('DELETE FROM lecturas');
                         }, app.error, app.guardarMedidoresEnApp(informacionRecibida) );
-
                     },
 
                     guardarMedidoresEnApp : function( fraccionamientos ){
