@@ -1,203 +1,206 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black">
-    <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
-    <link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="images/apple-touch-startup-image-640x1096.png">
-    <meta name="author" content="acd.mx" />
-    <meta name="description" content="ACD Lecturas App" />
-    <title>ACD Lecturas</title>
-    <link rel="stylesheet" href="css/themes/default/jquery.mobile-1.4.5.css">
-    <link type="text/css" rel="stylesheet" href="style.css" />
-    <link type="text/css" rel="stylesheet" href="css/colors/blue.css" />
-    <link type="text/css" rel="stylesheet" href="css/swipebox.css" />
-    <script src="js/jquery.min.js"></script>
-    <script src="js/jquery.mobile-1.4.5.min.js"></script>
-    <script type="text/javascript" src="js/jquery.swipebox.js"></script>
-    <script src="js/jquery.mobile-custom.js"></script>
-    <script type="text/javascript" src="cordova.js"></script>
-    <script type="text/javascript" src="js/index.js"></script>
-  </head>
-  <body>
-    <div data-role="page" id="contact" class="secondarypage" data-theme="b">
-        <div data-role="header" data-position="fixed">
-            <div class="nav_left_button"><a href="#" class="nav-toggle"><span></span></a></div>
-            <div class="nav_center_logo">LECTURAS</div>
-            <div class="nav_right_button"><a href="#right-panel"><img src="images/icons/white/user.png" alt="" title="" /></a></div>
-            <div class="clear"></div>
-        </div><!-- /header -->
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
+        <link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="images/apple-touch-startup-image-640x1096.png">
+        <meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'"
+        <meta name="author" content="acd.mx" />
+        <meta name="description" content="ACD Lecturas App" />
+        <title>ACD Lecturas</title>
+        <link rel="stylesheet" href="css/themes/default/jquery.mobile-1.4.5.css">
+        <link type="text/css" rel="stylesheet" href="style.css" />
+        <link type="text/css" rel="stylesheet" href="css/colors/blue.css" />
+        <link type="text/css" rel="stylesheet" href="css/swipebox.css" />
+        <script src="js/jquery.min.js"></script>
+        <script src="js/jquery.mobile-1.4.5.min.js"></script>
+        <script type="text/javascript" src="js/jquery.swipebox.js"></script>
+        <script src="js/jquery.mobile-custom.js"></script>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+    </head>
+    <body>
+        <div data-role="page" id="contact" class="secondarypage" data-theme="b">
+            <div data-role="header" data-position="fixed">
+                <div class="nav_left_button"><a href="#" class="nav-toggle"><span></span></a></div>
+                <div class="nav_center_logo">LECTURAS</div>
+                <div class="nav_right_button"><a href="#right-panel"><img src="images/icons/white/user.png" alt="" title="" /></a></div>
+                <div class="clear"></div>
+            </div><!-- /header -->
 
-        <div role="main" class="ui-content">
-          <div class="pages_maincontent">
-            <h2 class="page_title">Lecturas de agua</h2> 
-            <div class="tabs_content"> 
-              <div data-role="tabs" id="tabs">
-                <div data-role="navbar">
-                  <ul>
-                    <li><a href="#one" class="ui-btn-active">Todas</a></li>
-                    <li><a href="#two">Completas</a></li>
-                    <li><a href="#three">Faltantes</a></li>
-                  </ul>
-                </div>
-                <div id="one">
-                  <h2 class="page_title">Andara</h2>
-                  <!--div data-role="collapsible" data-content-theme="false">
-                    <h4>Zona 1</h4>
-                    <p>I'm the collapsible content. By default I'm closed, but you can click the header to open me.</p>
-                  </div-->
-                  <ul class="features_list" id="lista">
+            <div role="main" class="ui-content">
+              <div class="pages_maincontent">
+                <h2 class="page_title">Lecturas de agua</h2> 
+                <div class="tabs_content"> 
+                  <div data-role="tabs" id="tabs">
+                    <div data-role="navbar">
+                      <ul>
+                        <li><a href="#one" class="ui-btn-active">Todas</a></li>
+                        <li><a href="#two">Completas</a></li>
+                        <li><a href="#three">Faltantes</a></li>
+                      </ul>
+                    </div>
+                    <div id="one">
+                      <h2 class="page_title">Andara</h2>
+                      <!--div data-role="collapsible" data-content-theme="false">
+                        <h4>Zona 1</h4>
+                        <p>I'm the collapsible content. By default I'm closed, but you can click the header to open me.</p>
+                      </div-->
+                      <ul class="features_list" id="lista">
 
-                  </ul>
-                          
+                      </ul>
+                              
+                    </div>
+                    <div id="two">
+                              <h3>Tab two content</h3>
+                              
+                    </div>
+                    <div id="three">
+                              <h3>Tab three content</h3>
+                              
+                    </div>
+                  </div>
                 </div>
-                <div id="two">
-                          <h3>Tab two content</h3>
-                          
-                </div>
-                <div id="three">
-                          <h3>Tab three content</h3>
-                          
-                </div>
-              </div>
+               </div> 
+            </div><!-- /content -->
+
+            <div data-role="panel" id="left-panel" data-display="reveal" data-position="left">
+                <nav class="main-nav">
+                    <ul>
+                        <li>
+                      <a href="tomar_lectura.html" data-transition="slidefade"><img src="images/icons/white/team.png" alt="" title="" /><span>Scanear</span></a>
+                  </li>
+                  <li>
+                      <a href="lecturas.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Lecturas</span></a>
+                  </li>
+                  <li>
+                      <a href="sincronizar.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Sincronizar</span></a>
+                  </li>
+                  <li>
+                      <a href="subir.html" data-transition="slidefade"><img src="images/icons/white/blog.png" alt="" title="" /><span>Subir</span></a>
+                  </li>
+                    </ul>
+                </nav>
             </div>
-           </div> 
-        </div><!-- /content -->
 
-        <div data-role="panel" id="left-panel" data-display="reveal" data-position="left">
-      		<nav class="main-nav">
-      			<ul>
-      				<li>
-                  <a href="tomar_lectura.html" data-transition="slidefade"><img src="images/icons/white/team.png" alt="" title="" /><span>Scanear</span></a>
-              </li>
-              <li>
-                  <a href="lecturas.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Lecturas</span></a>
-              </li>
-              <li>
-                  <a href="sincronizar.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Sincronizar</span></a>
-              </li>
-              <li>
-                  <a href="subir.html" data-transition="slidefade"><img src="images/icons/white/blog.png" alt="" title="" /><span>Subir</span></a>
-              </li>
-      			</ul>
-      		</nav>
-      	</div>
-
-        <div data-role="panel" id="right-panel" data-display="reveal" data-position="right">
-        
-              <div class="user_login_info">
-              
-                        <div class="user_thumb_container">
-                        <img src="images/profile.jpg" alt="" title="" /> 
-                            <div class="user_thumb">
-                            <img src="images/author.jpg" alt="" title="" />     
+            <div data-role="panel" id="right-panel" data-display="reveal" data-position="right">
+            
+                  <div class="user_login_info">
+                  
+                            <div class="user_thumb_container">
+                            <img src="images/profile.jpg" alt="" title="" /> 
+                                <div class="user_thumb">
+                                <img src="images/author.jpg" alt="" title="" />     
+                                </div>  
+                            </div>
+                            
+                            <div class="user_details">
+                            <p>Sarah Williams</p>
+                                <ul class="user_social">
+                                <li><a href="social.html"><img src="images/icons/white/twitter.png" alt="" title="" /></a></li>
+                                <li><a href="social.html"><img src="images/icons/white/facebook.png" alt="" title="" /></a></li> 
+                                <li><a href="social.html"><img src="images/icons/white/dribbble.png" alt="" title="" /></a></li>               
+                                </ul> 
                             </div>  
-                        </div>
-                        
-                        <div class="user_details">
-                        <p>Sarah Williams</p>
-                            <ul class="user_social">
-                            <li><a href="social.html"><img src="images/icons/white/twitter.png" alt="" title="" /></a></li>
-                            <li><a href="social.html"><img src="images/icons/white/facebook.png" alt="" title="" /></a></li> 
-                            <li><a href="social.html"><img src="images/icons/white/dribbble.png" alt="" title="" /></a></li>               
-                            </ul> 
-                        </div>  
-     
+         
 
-                       <nav class="user-nav">
-                            <ul>
-                              <li><a href="features.html"><img src="images/icons/white/settings.png" alt="" title="" /><span>Settings</span></a></li>
-                              <li><a href="features.html"><img src="images/icons/white/briefcase.png" alt="" title="" /><span>Account</span></a></li>
-                              <li><a href="features.html"><img src="images/icons/white/message.png" alt="" title="" /><span>Messages</span><strong class="yellow">12</strong></a></li>
-                              <li><a href="features.html"><img src="images/icons/white/download.png" alt="" title="" /><span>Downloads</span><strong class="yellow">5</strong></a></li>
-                              <li><a href="index.html"><img src="images/icons/white/lock.png" alt="" title="" /><span>Logout</span></a></li>
-                            </ul>
-                       </nav>
-              </div>
-              <div class="close_loginpopup_button"><a href="#" data-rel="close"><img src="images/icons/white/menu_close.png" alt="" title="" /></a></div>
-              
-        </div><!-- /panel -->
-        <script type="text/javascript">
+                           <nav class="user-nav">
+                                <ul>
+                                  <li><a href="features.html"><img src="images/icons/white/settings.png" alt="" title="" /><span>Settings</span></a></li>
+                                  <li><a href="features.html"><img src="images/icons/white/briefcase.png" alt="" title="" /><span>Account</span></a></li>
+                                  <li><a href="features.html"><img src="images/icons/white/message.png" alt="" title="" /><span>Messages</span><strong class="yellow">12</strong></a></li>
+                                  <li><a href="features.html"><img src="images/icons/white/download.png" alt="" title="" /><span>Downloads</span><strong class="yellow">5</strong></a></li>
+                                  <li><a href="index.html"><img src="images/icons/white/lock.png" alt="" title="" /><span>Logout</span></a></li>
+                                </ul>
+                           </nav>
+                  </div>
+                  <div class="close_loginpopup_button"><a href="#" data-rel="close"><img src="images/icons/white/menu_close.png" alt="" title="" /></a></div>
+                  
+            </div><!-- /panel -->
+            <script type="text/javascript">
 
-          var app = {
+              var app = {
 
-            db : 
-              //window.sqlitePlugin.openDatabase({name : 'LecturasAppDB.db'})
-              window.openDatabase('LecturasAppDB.db', '1.0', 'LecturasAppDB', 200000)
-            ,
+                db : 
+                  //window.sqlitePlugin.openDatabase({name : 'LecturasAppDB.db'})
+                  window.openDatabase('LecturasAppDB.db', '1.0', 'LecturasAppDB', 200000)
+                ,
 
-            iniciar : function(){
-              app.db.transaction(app.leerLecturas, app.error, app.exito);
-            },
+                iniciar : function(){
+                  app.db.transaction(app.leerLecturas, app.error, app.exito);
+                },
 
-            leerLecturas : function(tx){
-              var fraccionamientos = [], zonas = {}, medidores = {};
+                leerLecturas : function(tx){
+                  var fraccionamientos = [], zonas = {}, medidores = {};
 
-              var SQLFraccionamientos = 'SELECT id, nombre FROM fraccionamientos ORDER BY id ASC;',
-                SQLZonas = 'SELECT id, fracc_id, nombre FROM zonas ORDER BY fracc_id, nombre ASC;',
-                SQLMedidores = 'SELECT * FROM lecturas ORDER BY zona_id, medidor ASC;';
-              
-              tx.executeSql(SQLFraccionamientos,[], function(tx, results1){
-                var longitudA = results1.rows.length;
-                for (var i = 0; i < longitudA; i++) {
-                  var fracc = results1.rows.item(i);
-                  fraccionamientos[ fracc.id ] = fracc.nombre;
-                }
+                  var SQLFraccionamientos = 'SELECT id, nombre FROM fraccionamientos ORDER BY id ASC;',
+                    SQLZonas = 'SELECT id, fracc_id, nombre FROM zonas ORDER BY fracc_id, nombre ASC;',
+                    SQLMedidores = 'SELECT * FROM lecturas ORDER BY zona_id, medidor ASC;';
+                  
+                  tx.executeSql(SQLFraccionamientos,[], function(tx, results1){
+                    var longitudA = results1.rows.length;
+                    for (var i = 0; i < longitudA; i++) {
+                      var fracc = results1.rows.item(i);
+                      fraccionamientos[ fracc.id ] = fracc.nombre;
+                    }
 
-                tx.executeSql(SQLZonas,[], function(tx, results2){
-                  var longitudB = results2.rows.length;
-                  for (var i = 0; i < longitudB; i++) {
-                    var zona = results2.rows.item(i);
-                    zonas[ zona.fracc_id ] += zona;
-                  }
-                  tx.executeSql(SQLMedidores,[], function(tx, results3){
-                    medidores = results3;
-                    console.log(zonas);
-                    app.dibujarLecturas( fraccionamientos, zonas, medidores);
+                    tx.executeSql(SQLZonas,[], function(tx, results2){
+                      var longitudB = results2.rows.length;
+                      for (var i = 0; i < longitudB; i++) {
+                        var zona = results2.rows.item(i);
+                        zonas[ zona.fracc_id ] = zona.nombre;
+                      }
+                      tx.executeSql(SQLMedidores,[], function(tx, results3){
+                        medidores = results3;
+                        //console.log(zonas);
+                        app.dibujarLecturas( fraccionamientos, zonas, medidores);
+                      }, app.error);
+                    }, app.error);
+
                   }, app.error);
-                }, app.error);
 
-              }, app.error);
+                  
+                },
 
-              
-            },
+                dibujarLecturas : function(fraccionamientos, zonas, medidores){
+                  
+                  var one = document.getElementById('one'), cadena = '';
 
-            dibujarLecturas : function(fraccionamientos, zonas, medidores){
-              
-              var one = document.getElementById('one'), cadena = '';
+                  for (id_fracc in fraccionamientos) {
+                    cadena += '<h2 class="page_titl">' + fraccionamientos[id_fracc] + '</h2>';
 
-              for (id_fracc in fraccionamientos) {
-                cadena += '<h2 class="page_title">' + fraccionamientos[id_fracc] + '</h2>';
+                    /*
+                    for (id_zona in zonas[ id_fracc ]) {
+                      cadena += '<p><b>' + zonas[id_fracc] + '</b></p>';
+                    }
+                    */
 
-                for (id_zona in zonas[ id_fracc ]) {
-                  cadena += '<p><b>' + zonas[id_zona] + '</b></p>';
+
+                  }
+
+                  one.innerHTML = cadena;
+                  
+                },
+
+                exito : function(){
+                  //alert('Lecturas leidas correctamente');
+                },
+
+                error : function(e){
+                  alert('Sucedió un error. Código ' + e.code + ': '+ e.message);
                 }
 
+              };
 
-              }
-
-              one.innerHTML = cadena;
-              
-            },
-
-            exito : function(){
-              //alert('Lecturas leidas correctamente');
-            },
-
-            error : function(e){
-              alert('Sucedió un error. Código ' + e.code + ': '+ e.message);
-            }
-
-          };
-
-          document.addEventListener('deviceready', function(){
-            if('addEventListener' in document){
-              app.iniciar();
-            }
-          }, false);
-        </script>
-    </div>
-  </body>
+              document.addEventListener('deviceready', function(){
+                if('addEventListener' in document){
+                  app.iniciar();
+                }
+              }, false);
+            </script>
+        </div>
+    </body>
 </html>
