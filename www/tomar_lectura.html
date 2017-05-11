@@ -14,12 +14,6 @@
         <link type="text/css" rel="stylesheet" href="style.css" />
         <link type="text/css" rel="stylesheet" href="css/colors/blue.css" />
         <link type="text/css" rel="stylesheet" href="css/swipebox.css" />
-        <script src="js/jquery.min.js"></script>
-        <script src="js/jquery.mobile-1.4.5.min.js"></script>
-        <script type="text/javascript" src="js/jquery.swipebox.js"></script>
-        <script src="js/jquery.mobile-custom.js"></script>
-        <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
     </head>
     <body>
         <div data-role="page" id="contact" class="secondarypage" data-theme="b">
@@ -90,6 +84,7 @@
                 <div class="close_loginpopup_button"><a href="#" data-rel="close"><img src="images/icons/white/menu_close.png" alt="" title="" /></a></div>
             </div>
             <style>
+                
                 table {
                     width: 94%;
                     margin: 0 auto;
@@ -115,6 +110,12 @@
 
                 }
             </style>
+            <script src="js/jquery.min.js"></script>
+            <script src="js/jquery.mobile-1.4.5.min.js"></script>
+            <script type="text/javascript" src="js/jquery.swipebox.js"></script>
+            <script src="js/jquery.mobile-custom.js"></script>
+            <script type="text/javascript" src="cordova.js"></script>
+            <script type="text/javascript" src="js/index.js"></script>
             <script type="text/javascript">
                 
                 var app = {
@@ -171,7 +172,7 @@
                         var medidor = app.inputMedidor.value;
                         if( medidor != ''){
                             app.db.transaction(function(tx){
-                                tx.executeSql('SELECT * FROM lecturas WHERE fk = 804;', [medidor], app.evaluarInformacion, app.error);
+                                tx.executeSql('SELECT * FROM lecturas WHERE medidor = ?;', [medidor], app.evaluarInformacion, app.error);
                             }, app.error, app.exito);
                         }else{
                             app.vibrar();
@@ -262,16 +263,14 @@
                     },
 
                     editarLectura : function( fk ){
-                        alert(fk)
+                        alert(fk);
                         app.db.transaction(function(tx){
-                            tx.executeSql('SELECT medidor FROM lecturas WHERE fk = ?;', [fk_med], app.solicitarDeNuevo, app.error);
+                            tx.executeSql('SELECT medidor FROM lecturas WHERE fk = ?;', [fk], app.solicitarDeNuevo, app.error);
                         }, app.error, app.exito);
                     },
 
                     solicitarDeNuevo : function(tx, results){
-                        console.log(results)
-                        //app.solicitarLectura( results.rows.item(0) );
-
+                        app.solicitarLectura( results.rows.item(0) );
                     },
 
                     fechaActual : function(){
