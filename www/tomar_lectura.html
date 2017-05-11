@@ -116,10 +116,10 @@
                 }
             </style>
             <script type="text/javascript">
+                
                 var app = {
 
                     db : 
-                        //window.sqlitePlugin.openDatabase({name : 'LecturasAppDB.db'})
                         window.openDatabase('LecturasAppDB.db', '1.0', 'LecturasAppDB', 200000)
                     ,
 
@@ -144,11 +144,12 @@
                     iniciarScanner : function(){
                         cordova.plugins.barcodeScanner.scan(
                             function (result) {
-                                cadena = result.text;
-                                alert(cadena);
-                                resultado = cadena.substr(8, cadena.indexOf("*") - 8 );
-                                app.inputMedidor.value = resultado ;
-                                app.botonSubmit.click();
+                                if( !result.cancelled ){
+                                    cadena = result.text;
+                                    resultado = cadena.substr(8, cadena.indexOf("*") - 8 );
+                                    app.inputMedidor.value = resultado ;
+                                    app.botonSubmit.click();
+                                }
                             },
                             app.errorScanner,
                             {
@@ -169,19 +170,18 @@
                     buscarMedidor : function(){
                         var medidor = app.inputMedidor.value;
                         if( medidor != ''){
-
                             app.db.transaction(function(tx){
-                                tx.executeSql('SELECT * FROM lecturas WHERE medidor = ?;', [medidor], app.evaluarInformacion, app.error);
+                                tx.executeSql('SELECT * FROM lecturas WHERE fk = 804;', [medidor], app.evaluarInformacion, app.error);
                             }, app.error, app.exito);
-
                         }else{
-                            alert('Ingrese un medidor o use el scanner');
+                            app.vibrar();
+                            navigator.notification.alert('Ingrese un medidor o use el scanner', function(){}, '¡ ATENCIÓN !', 'Aceptar');
                         }
                     },
 
                     evaluarInformacion : function(tx, resultados){
                         var longitud = resultados.rows.length;
-                        var info = 'No se encontraron resultados';
+                        var info = '<center><span class="text-danger">¡ No se encontraron resultados !</span></center>';
                         if( longitud > 0){
                             if( longitud == 1 ){
                                 var medidor = resultados.rows.item(0);
@@ -194,7 +194,7 @@
                                 app.formarInformacion( resultados );
                             }
                         }else{
-                            app.dibujarInformacion( info );
+                            app.datosMedidor.innerHTML = info;
                         }
                     },
 
@@ -211,7 +211,7 @@
                                 consumo   : (medidor.actual == -1) ? '- - -' : (medidor.actual-medidor.anterior) +' m3',
                                 fecha     : (medidor.fecha == -1) ? '- - -' : medidor.fecha,
                                 promedio  : medidor.promedio +' m3',
-                                boton     : '<a class="editar" onclick="app.editar('+medidor.fk+')">EDITAR</a>'
+                                boton     : '<a class="editar" onclick="app.editarLectura('+medidor.fk+')">EDITAR</a>'
                             };
                             info += app.dibujarInformacion( datos );
                         }
@@ -232,43 +232,70 @@
                     },
 
                     solicitarLectura : function( medidor ){
-                        var lectura = prompt('Inserte lectura mayor/igual a '+medidor.anterior+' m3: ');
-                        if( lectura != null ){
-                            if( lectura != '' ){
+
+                        var mensaje = 'Inserte lectura mayor/igual a '+medidor.anterior+' m3: ';
+
+                        navigator.notification.prompt(mensaje, function(data){
+                            var lectura = parseInt( data.input1 )
+
+                            if( !isNaN(lectura) ){
                                 if( lectura >= medidor.anterior ){
                                     app.insertarLectura( medidor, lectura);
                                 }else{
                                     app.solicitarLectura( medidor );                        
                                 }
                             }else{
-                                alert('Ingrese una lectura correcta');
-                                app.solicitarLectura(medidor);
+                                app.vibrar();
+                                navigator.notification.alert('Ingrese una lectura correcta', function(){
+                                    app.solicitarLectura(medidor);
+                                }, 'LECTURA INCORRECTA', 'Aceptar');
                             }
-                        }
+                        }, 'INGRESAR LECTURA', ['Aceptar', 'Cancelar']);
                     },
 
                     insertarLectura : function(medidor, lectura){
                         app.db.transaction(function(tx){
-                            var f = new Date();
-                            var fecha = f.getFullYear() + '-' + (f.getMonth()+1) + '-' + f.getDate();
+                            var fecha = app.fechaActual();
                             tx.executeSql('UPDATE lecturas SET actual = ?, fecha = ? WHERE fk = ?;',[ lectura, fecha, medidor.fk ],
                                 app.exito, app.error);
                         }, app.error, app.buscarMedidor);
                     },
 
-                    editar : function( fk ){
+                    editarLectura : function( fk ){
+                        alert(fk)
                         app.db.transaction(function(tx){
-                            tx.executeSql('SELECT * FROM lecturas WHERE fk = ?;', [fk], function(tx, result){
-                                app.solicitarLectura( result.rows.item(0) );
-                            }, app.error);
+                            tx.executeSql('SELECT medidor FROM lecturas WHERE fk = ?;', [fk_med], app.solicitarDeNuevo, app.error);
                         }, app.error, app.exito);
                     },
 
-                    exito : function(){
+                    solicitarDeNuevo : function(tx, results){
+                        console.log(results)
+                        //app.solicitarLectura( results.rows.item(0) );
 
                     },
 
+                    fechaActual : function(){
+                        var today = new Date();
+                        var dd = today.getDate();
+                        var mm = today.getMonth()+1;
+                        var yyyy = today.getFullYear();
+
+                        if(dd<10){ dd='0'+dd; } 
+                        if(mm<10){ mm='0'+mm; }
+
+                        return yyyy+'-'+mm+'-'+dd;
+                    },
+
+                    vibrar : function( duracion = 750 ){
+                        navigator.notification.vibrate( duracion );
+                    },
+
+                    exito : function(){
+                        return false;
+                    },
+
                     error : function(e){
+                        console.log(e)
                         alert('Sucedió un error. Código ' + e.code + ': '+ e.message);
                     },
 

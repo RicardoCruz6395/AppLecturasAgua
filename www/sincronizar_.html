@@ -1,0 +1,241 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
+        <link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="images/apple-touch-startup-image-640x1096.png">
+        <meta http-equiv="Content-Security-Policy" content="default-src * data: gap: ; img-src 'self' data: content:;  style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+        <meta name="author" content="acd.mx" />
+        <meta name="description" content="ACD Lecturas App" />
+        <title>ACD Lecturas</title>
+        <link rel="stylesheet" href="css/themes/default/jquery.mobile-1.4.5.css">
+        <link type="text/css" rel="stylesheet" href="style.css" />
+        <link type="text/css" rel="stylesheet" href="css/colors/blue.css" />
+        <link type="text/css" rel="stylesheet" href="css/swipebox.css" />
+        <script src="js/jquery.min.js"></script>
+        <script src="js/jquery.mobile-1.4.5.min.js"></script>
+        <script type="text/javascript" src="js/jquery.swipebox.js"></script>
+        <script src="js/jquery.mobile-custom.js"></script>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+    </head>
+    <body>
+        <div data-role="page" id="contact" class="secondarypage" data-theme="b">
+            <div data-role="header" data-position="fixed">
+                <div class="nav_left_button"><a href="#" class="nav-toggle"><span></span></a></div>
+                <div class="nav_center_logo">SINCRONIZAR</div>
+                <div class="nav_right_button"><a href="#right-panel"><img src="images/icons/white/user.png" alt="" title="" /></a></div>
+                <div class="clear"></div>
+            </div><!-- /header -->
+            <div role="main" class="ui-content">
+               <div class="pages_maincontent">
+                    <div class="form_logo">Subir lecturas de la aplicación al sistema</div>
+                    <div class="page_content"> 
+                        <button id="appSistema" class="form_submit">Aplicación &rarr; Sistema</button>
+                    </div>
+                    <div class="form_logo">Bajar lecturas del sistema a la aplicación </div>
+                    <div class="page_content"> 
+                        <button id="sistemaApp" class="form_submit">Sistema &rarr; Aplicación</button>
+                    </div>
+                    <div class="form_logo"><span class="text-danger">¡Cuidado!</span><br>
+                        Estos procesos pueden reemplazar lecturas de agua
+                    </div>
+                    <div id="resultado"></div>
+                </div>
+            </div><!-- /content -->
+            <div data-role="panel" id="left-panel" data-display="reveal" data-position="left">
+                <nav class="main-nav">
+                    <ul>
+                        <li>
+                            <a href="tomar_lectura.html" data-transition="slidefade"><img src="images/icons/white/team.png" alt="" title="" /><span>Scanear</span></a>
+                        </li>
+                        <li>
+                            <a href="lecturas.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Lecturas</span></a>
+                        </li>
+                        <li>
+                            <a href="sincronizar.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Sincronizar</span></a>
+                        </li>
+                        <li>
+                            <a href="subir.html" data-transition="slidefade"><img src="images/icons/white/blog.png" alt="" title="" /><span>Subir</span></a>
+                        </li>
+                    </ul>
+                </nav>
+            </div>
+
+            <div data-role="panel" id="right-panel" data-display="reveal" data-position="right">
+                <div class="user_login_info">
+                    <div class="user_thumb_container">
+                        <img src="images/profile.jpg" alt="" title="" /> 
+                        <div class="user_thumb">
+                            <img src="images/author.jpg" alt="" title="" />     
+                        </div>  
+                    </div>
+                    <div class="user_details">
+                        <p>Sarah Williams</p>
+                    </div>
+                    <nav class="user-nav">
+                        <ul>
+                            <li><a href="features.html"><img src="images/icons/white/settings.png" alt="" title="" /><span>Settings</span></a></li>
+                            <li><a href="features.html"><img src="images/icons/white/briefcase.png" alt="" title="" /><span>Account</span></a></li>
+                            <li><a href="features.html"><img src="images/icons/white/message.png" alt="" title="" /><span>Messages</span><strong class="yellow">12</strong></a></li>
+                            <li><a href="features.html"><img src="images/icons/white/download.png" alt="" title="" /><span>Downloads</span><strong class="yellow">5</strong></a></li>
+                            <li><a href="index.html"><img src="images/icons/white/lock.png" alt="" title="" /><span>Logout</span></a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="close_loginpopup_button"><a href="#" data-rel="close"><img src="images/icons/white/menu_close.png" alt="" title="" /></a></div>
+            </div>
+            <script type="text/javascript">
+
+                var app = {
+
+                    db : 
+                        window.openDatabase('LecturasAppDB.db', '1.0', 'LecturasAppDB', 200000)
+                    ,
+
+                    botonSistemaApp :
+                        document.getElementById('sistemaApp')
+                    ,
+
+                    botonAppSistema :
+                        document.getElementById('appSistema')
+                    ,
+
+                    iniciar : function(){
+                        app.botonSistemaApp.addEventListener('click', app.sincronizarSistemaApp);
+                        app.botonAppSistema.addEventListener('click', app.sincronizarAppSistema);
+                    },
+
+                    sincronizarSistemaApp : function(){
+                        ok = confirm('Se reemplazarán las lecturas de la aplicación que no haya subido al sistema. ¿Continuar?');
+                        if( ok ){
+                            var request = $.ajax({
+                                type: "GET" ,
+                                crossDomain: true,
+                                url: '//app.acd.mx/',
+                                dataType : 'json'
+                            });
+                            request.done(function (response, textStatus, jqXHR){
+                                app.vaciarTablas( response );
+                            });
+                            request.fail(function (jqXHR, textStatus, errorThrown){
+                                alert('Error en petición: ' + textStatus);
+                            });
+                        }
+                    },
+
+                    sincronizarAppSistema : function(){
+                        alert('Función no disponible');
+                    },
+
+                    vaciarTablas : function( informacionRecibida ){
+                        app.db.transaction(function(tx){
+                            tx.executeSql('DELETE FROM fraccionamientos');
+                            tx.executeSql('DELETE FROM zonas');
+                            tx.executeSql('DELETE FROM lecturas');
+                        }, app.error, app.guardarMedidoresEnApp(informacionRecibida) );
+                    },
+
+                    guardarMedidoresEnApp : function( fraccionamientos ){
+                        alert('Se han eliminado las lecturas anteriores')
+                        setTimeout(function(){
+                            var sqlFraccionamientos = '',
+                                sqlZonas = '',
+                                sqlMedidores = '';
+                            for (var id_fracc in fraccionamientos ) {
+
+                                // Insertar el fraccionamiento
+                                var fraccionamiento = fraccionamientos[id_fracc];
+                                
+                                //app.insertarFraccionamiento([ id_fracc, fraccionamiento.nombre ]);
+                                sqlFraccionamientos = '('+id_fracc+',"'+fraccionamiento.nombre+'")';
+                                // Preguntar si hay zonas en el fraccionamiento
+                                if( typeof fraccionamiento.zonas === "object"){
+                                    var zonas = fraccionamiento.zonas;
+                                    for (var id_zona in zonas ) {
+                                        // Insertar zona del fraccionamiento
+                                        var zona = zonas[id_zona];
+                                        
+                                        //app.insertarZona([ id_zona, id_fracc, zona.nombre ]);
+                                        sqlZonas = '('+id_zona+','+id_fracc+',"'+zona.nombre+'")';
+                                        // Preguntar si la zona tiene medidores
+                                        if( typeof zona.lecturas === "object"){
+                                            var lecturas = zona.lecturas;
+                                            for (var fk_residente in lecturas ) {
+                                                // Insertar medidor de la zona
+                                                /* 0 -> Medidor
+                                                   1 -> Nombre de residente
+                                                   2 -> Lectura anterior
+                                                   3 -> Lectura nueva
+                                                   4 -> Consumo
+                                                   5 -> Promedio
+                                                   6 -> Diferencia
+                                                   7 -> Fecha
+                                                   8 -> Hora
+                                                */
+                                                var medidor = lecturas[ fk_residente ];
+                                                var datos = [ fk_residente, id_zona, medidor[0], medidor[1], medidor[5], medidor[2], medidor[3], medidor[7] ];
+                                                //app.insertarMedidor( datos );
+                                                sqlMedidores = '('+datos[0]+','+datos[1]+',"'+datos[2]+'","'+datos[3]+'",'+datos[4]+','+datos[5]+','+datos[6]+','+datos[7]+')';
+                                            }
+
+                                        }
+
+                                    }
+
+                                }
+                            }
+
+                            app.insertarFraccionamientos(sqlFraccionamientos, sqlZonas, sqlMedidores);
+                        }, 3000);
+                    },
+
+                    insertarFraccionamientos : function( fraccionamientos, zonas, medidores ){
+                        var cadena = 'INSERT INTO fraccionamientos(id, nombre) VALUES ' + fraccionamientos;
+                        alert(cadena);
+                        app.db.transaction(function(tx){
+                            tx.executeSql(cadena);
+                        }, app.error, app.insertarZonas(zonas, medidores) );
+                    },
+
+                    insertarZonas : function( zonas, medidores ){
+                        var cadena = 'INSERT INTO zonas(id, fracc_id, nombre) VALUES ' + zonas;
+                        alert(cadena);
+                        app.db.transaction(function(tx){
+                            tx.executeSql(cadena);
+                        }, app.error, app.insertarMedidores(medidores) );
+
+                    },
+
+                    insertarMedidores : function( medidores ){
+                        var cadena = 'INSERT INTO lecturas(fk, zona_id, medidor, residente, promedio, anterior, actual, fecha) VALUES ' + medidores;
+                        alert(cadena);
+                        app.db.transaction(function(tx){
+                            tx.executeSql(cadena);
+                        }, app.error, app.exito);
+                    },
+
+                    error : function(e){
+                        alert('Sucedió un error. Código ' + e.code + ': '+ e.message);
+                    },
+
+                    exito : function(){
+                        alert('Lecturas del Sistema a la Aplicación sincronizadas correctamente! ')
+                    }
+
+                };
+
+                
+                document.addEventListener('deviceready', function(){
+                    if('addEventListener' in document){
+                        app.iniciar();
+                    }
+                }, false);
+
+            </script>
+        </div>
+    </body>
+</html>

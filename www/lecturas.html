@@ -33,7 +33,7 @@
 
             <div role="main" class="ui-content">
               <div class="pages_maincontent">
-                <h2 class="page_title">Lecturas de agua</h2> 
+                <h2 class="page_title">Lecturas de agua</h2>
                 <div class="tabs_content"> 
                   <div data-role="tabs" id="tabs">
                     <div data-role="navbar">
@@ -44,14 +44,7 @@
                       </ul>
                     </div>
                     <div id="one">
-                      <h2 class="page_title">Andara</h2>
-                      <!--div data-role="collapsible" data-content-theme="false">
-                        <h4>Zona 1</h4>
-                        <p>I'm the collapsible content. By default I'm closed, but you can click the header to open me.</p>
-                      </div-->
-                      <ul class="features_list" id="lista">
-
-                      </ul>
+                      
                               
                     </div>
                     <div id="two">
@@ -125,8 +118,7 @@
               var app = {
 
                 db : 
-                  //window.sqlitePlugin.openDatabase({name : 'LecturasAppDB.db'})
-                  window.openDatabase('LecturasAppDB.db', '1.0', 'LecturasAppDB', 200000)
+                    window.openDatabase('LecturasAppDB.db', '1.0', 'LecturasAppDB', 2000000)
                 ,
 
                 iniciar : function(){
@@ -134,55 +126,76 @@
                 },
 
                 leerLecturas : function(tx){
-                  var fraccionamientos = [], zonas = {}, medidores = {};
+                    var fraccionamientos = {}, zonas = {}, medidores = {};
 
-                  var SQLFraccionamientos = 'SELECT id, nombre FROM fraccionamientos ORDER BY id ASC;',
+                    var SQLFraccionamientos = 'SELECT id, nombre FROM fraccionamientos ORDER BY id ASC;',
                     SQLZonas = 'SELECT id, fracc_id, nombre FROM zonas ORDER BY fracc_id, nombre ASC;',
                     SQLMedidores = 'SELECT * FROM lecturas ORDER BY zona_id, medidor ASC;';
                   
-                  tx.executeSql(SQLFraccionamientos,[], function(tx, results1){
-                    var longitudA = results1.rows.length;
-                    for (var i = 0; i < longitudA; i++) {
-                      var fracc = results1.rows.item(i);
-                      fraccionamientos[ fracc.id ] = fracc.nombre;
-                    }
 
-                    tx.executeSql(SQLZonas,[], function(tx, results2){
-                      var longitudB = results2.rows.length;
-                      for (var i = 0; i < longitudB; i++) {
-                        var zona = results2.rows.item(i);
-                        zonas[ zona.fracc_id ] = zona.nombre;
-                      }
-                      tx.executeSql(SQLMedidores,[], function(tx, results3){
-                        medidores = results3;
-                        //console.log(zonas);
-                        app.dibujarLecturas( fraccionamientos, zonas, medidores);
-                      }, app.error);
+                    tx.executeSql(SQLFraccionamientos,[], function(tx, results1){
+                        var longitudA = results1.rows.length;
+                        
+                        for (var i = 0; i < longitudA; i++) {
+                            var fracc = results1.rows.item(i);
+                            fraccionamientos[ fracc.id ] = fracc.nombre;
+                            zonas[ fracc.id ] = {}
+                        }
+
+                        
+                        tx.executeSql(SQLZonas,[], function(tx, results2){
+                            var longitudB = results2.rows.length;
+                            for (var i = 0; i < longitudB; i++) {
+                                var zona = results2.rows.item(i);
+                                zonas[ zona.fracc_id ][ zona.id ] = zona.nombre;
+                                medidores[ zona.id ] = {}
+                            }
+
+                            tx.executeSql(SQLMedidores,[], function(tx, results3){
+                                var longitudC = results3.rows.length;
+                                
+                                for (var i = 0; i < longitudC; i++) {
+                                    var medidor = results3.rows.item(i);
+                                    medidores[ medidor.zona_id ][ medidor.fk ] = medidor;
+                                }
+
+                                app.dibujarLecturas( fraccionamientos, zonas, medidores);
+                            }, app.error);
+                        
+                        }, app.error);
+                    
                     }, app.error);
-
-                  }, app.error);
 
                   
                 },
 
                 dibujarLecturas : function(fraccionamientos, zonas, medidores){
-                  
                   var one = document.getElementById('one'), cadena = '';
-
-                  for (id_fracc in fraccionamientos) {
-                    cadena += '<h2 class="page_titl">' + fraccionamientos[id_fracc] + '</h2>';
-
-                    /*
-                    for (id_zona in zonas[ id_fracc ]) {
-                      cadena += '<p><b>' + zonas[id_fracc] + '</b></p>';
-                    }
-                    */
-
-
-                  }
-
-                  one.innerHTML = cadena;
                   
+                    for (id_fracc in fraccionamientos) {
+                        cadena += '<h2 class="page_title">' + fraccionamientos[id_fracc] + '</h2>';
+                        
+                        for( id_zona in zonas[ id_fracc ] ){
+                            var zona = zonas[ id_fracc ][ id_zona ];
+                            cadena += '<h3>' + zona + '</h3>';
+                            
+                            cadena += '<ul class="features_list">';
+
+                            for( fk in medidores[ id_zona ] ){
+                                var medidor = medidores[ id_zona ][ fk ];
+                                cadena += '<li>' + medidor.medidor + '</li>';
+
+                            }
+
+                            cadena += '</ul>';
+
+                        }
+
+
+
+                    }
+                  
+                  one.innerHTML = cadena;
                 },
 
                 exito : function(){

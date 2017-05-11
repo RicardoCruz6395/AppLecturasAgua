@@ -1,6 +1,18 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="io.cordova.hellocordova" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="mx.acd.app" version="1.1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:gap="http://phonegap.com/ns/1.0">
     <feature name="BarcodeScanner">
         <param name="browser-package" value="BarcodeScanner" />
     </feature>
+    <name>Lecturas de Agua App</name>
+    <description>
+        Aplicación para la toma de lecturas de agua
+    </description>
+    <author email="control.sistemas77@gmail.com" href="http://acd.mx">
+        Control de Sistemas ACD
+    </author>
+    <content src="index.html" />
+    <allow-intent href="market:*" />
+    <access origin="*" />
+    <allow-intent href="*" />
+    <allow-navigation href="*" />
 </widget>

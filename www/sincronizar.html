@@ -31,7 +31,8 @@
                 <div class="clear"></div>
             </div><!-- /header -->
             <div role="main" class="ui-content">
-               <div class="pages_maincontent">
+                <div class="pages_maincontent">
+                <div id="resultado"></div>
                     <div class="form_logo">Subir lecturas de la aplicación al sistema</div>
                     <div class="page_content"> 
                         <button id="appSistema" class="form_submit">Aplicación &rarr; Sistema</button>
@@ -82,7 +83,7 @@
                             <li><a href="features.html"><img src="images/icons/white/briefcase.png" alt="" title="" /><span>Account</span></a></li>
                             <li><a href="features.html"><img src="images/icons/white/message.png" alt="" title="" /><span>Messages</span><strong class="yellow">12</strong></a></li>
                             <li><a href="features.html"><img src="images/icons/white/download.png" alt="" title="" /><span>Downloads</span><strong class="yellow">5</strong></a></li>
-                            <li><a href="index.html"><img src="images/icons/white/lock.png" alt="" title="" /><span>Logout</span></a></li>
+                            <li id="salir"><a href="index.html"><img src="images/icons/white/lock.png" alt="" title="" /><span>Logout</span></a></li>
                         </ul>
                     </nav>
                 </div>
@@ -104,27 +105,54 @@
                         document.getElementById('appSistema')
                     ,
 
+                    botonSalir : 
+                        document.getElementById('salir')
+                    ,
+
                     iniciar : function(){
                         app.botonSistemaApp.addEventListener('click', app.sincronizarSistemaApp);
                         app.botonAppSistema.addEventListener('click', app.sincronizarAppSistema);
+                        app.botonSalir.addEventListener('click', app.salir);
+                    },
+
+                    checarConexion : function(){
+                        var networkState = navigator.connection.type;
+
+                        var states = {};
+                        states[Connection.UNKNOWN]  = 'Unknown connection';
+                        states[Connection.ETHERNET] = 'Ethernet connection';
+                        states[Connection.WIFI]     = 'WiFi connection';
+                        states[Connection.CELL_2G]  = 'Cell 2G connection';
+                        states[Connection.CELL_3G]  = 'Cell 3G connection';
+                        states[Connection.CELL_4G]  = 'Cell 4G connection';
+                        states[Connection.CELL]     = 'Cell generic connection';
+                        states[Connection.NONE]     = 'No network connection';
+
+                        alert('Connection type: ' + states[networkState]);
                     },
 
                     sincronizarSistemaApp : function(){
-                        ok = confirm('Se reemplazarán las lecturas de la aplicación que no haya subido al sistema. ¿Continuar?');
-                        if( ok ){
-                            var request = $.ajax({
-                                type: "GET" ,
-                                crossDomain: true,
-                                url: '//app.acd.mx/',
-                                dataType : 'json'
-                            });
-                            request.done(function (response, textStatus, jqXHR){
-                                app.vaciarTablas( response );
-                            });
-                            request.fail(function (jqXHR, textStatus, errorThrown){
-                                alert('Error en petición: ' + textStatus);
-                            });
-                        }
+
+                        app.checarConexion();
+                        
+                        navigator.notification.confirm('Se reemplazarán las lecturas de la aplicación que no haya subido al sistema. ¿Continuar?',function(){
+
+                                var request = $.ajax({
+                                    type: 'POST',
+                                    crossDomain: true,
+                                    url: 'http://app.acd.mx/',
+                                    beforeSend : function(){
+                                        app.botonAppSistema.disabled = true;
+                                        app.botonSistemaApp.disabled = true;
+                                    },
+                                    success : app.vaciarTablas
+                                });
+
+                                request.fail(function (jqXHR, textStatus, errorThrown){
+                                    alert('Error en petición: ' + textStatus);
+                                });
+                        },'¡ ATENCIÓN !', ['Sí','Cancelar']);
+                        
                     },
 
                     sincronizarAppSistema : function(){
@@ -140,17 +168,15 @@
                     },
 
                     guardarMedidoresEnApp : function( fraccionamientos ){
-                        setTimeout(function(){
-                            var sqlFraccionamientos = '',
-                                sqlZonas = '',
-                                sqlMedidores = '';
+                        app.vibrar();
+                        navigator.notification.alert('Se han eliminado las lecturas de la aplicación',function(){
+
                             for (var id_fracc in fraccionamientos ) {
 
                                 // Insertar el fraccionamiento
                                 var fraccionamiento = fraccionamientos[id_fracc];
                                 
-                                //app.insertarFraccionamiento([ id_fracc, fraccionamiento.nombre ]);
-                                sqlFraccionamientos = '('+id_fracc+',"'+fraccionamiento.nombre+'")';
+                                app.insertarFraccionamiento( id_fracc, fraccionamiento.nombre );
                                 // Preguntar si hay zonas en el fraccionamiento
                                 if( typeof fraccionamiento.zonas === "object"){
                                     var zonas = fraccionamiento.zonas;
@@ -158,27 +184,25 @@
                                         // Insertar zona del fraccionamiento
                                         var zona = zonas[id_zona];
                                         
-                                        //app.insertarZona([ id_zona, id_fracc, zona.nombre ]);
-                                        sqlZonas = '('+id_zona+','+id_fracc+',"'+zona.nombre+'")';
+                                        app.insertarZona( id_zona, id_fracc, zona.nombre );
                                         // Preguntar si la zona tiene medidores
                                         if( typeof zona.lecturas === "object"){
                                             var lecturas = zona.lecturas;
                                             for (var fk_residente in lecturas ) {
                                                 // Insertar medidor de la zona
-                                                /* 0 -> Medidor
-                                                   1 -> Nombre de residente
-                                                   2 -> Lectura anterior
-                                                   3 -> Lectura nueva
-                                                   4 -> Consumo
-                                                   5 -> Promedio
-                                                   6 -> Diferencia
-                                                   7 -> Fecha
-                                                   8 -> Hora
-                                                */
+                                                // 0 -> Medidor
+                                                // 1 -> Nombre de residente
+                                                // 2 -> Lectura anterior
+                                                // 3 -> Lectura nueva
+                                                // 4 -> Consumo
+                                                // 5 -> Promedio
+                                                // 6 -> Diferencia
+                                                // 7 -> Fecha
+                                                // 8 -> Hora
+                                                
                                                 var medidor = lecturas[ fk_residente ];
                                                 var datos = [ fk_residente, id_zona, medidor[0], medidor[1], medidor[5], medidor[2], medidor[3], medidor[7] ];
-                                                //app.insertarMedidor( datos );
-                                                sqlMedidores = '('+datos[0]+','+datos[1]+',"'+datos[2]+'","'+datos[3]+'",'+datos[4]+','+datos[5]+','+datos[6]+','+datos[7]+')';
+                                                app.insertarMedidor( datos );
                                             }
 
                                         }
@@ -187,34 +211,41 @@
 
                                 }
                             }
-
-                            app.insertarFraccionamientos(sqlFraccionamientos, sqlZonas, sqlMedidores);
-                        }, 3000);
-                    },
-
-                    insertarFraccionamientos : function( fraccionamientos, zonas, medidores ){
-                        var cadena = 'INSERT INTO fraccionamientos(id, nombre) VALUES ' + fraccionamientos;
-                        alert(cadena);
-                        app.db.transaction(function(tx){
-                            tx.executeSql(cadena);
-                        }, app.error, app.insertarZonas(zonas, medidores) );
-                    },
-
-                    insertarZonas : function( zonas, medidores ){
-                        var cadena = 'INSERT INTO zonas(id, fracc_id, nombre) VALUES ' + zonas;
-                        alert(cadena);
-                        app.db.transaction(function(tx){
-                            tx.executeSql(cadena);
-                        }, app.error, app.insertarMedidores(medidores) );
+                            app.botonAppSistema.disabled = false;
+                            app.botonSistemaApp.disabled = false;
+                        },'¡ ATENCIÓN !','Aceptar')
 
                     },
 
-                    insertarMedidores : function( medidores ){
-                        var cadena = 'INSERT INTO lecturas(fk, zona_id, medidor, residente, promedio, anterior, actual, fecha) VALUES ' + medidores;
-                        alert(cadena);
+                    insertarFraccionamiento : function( id, nombre ){
+                        var cadena = 'INSERT INTO fraccionamientos(id, nombre) VALUES (?,?)';
                         app.db.transaction(function(tx){
-                            tx.executeSql(cadena);
-                        }, app.error, app.exito);
+                            tx.executeSql(cadena, [id, nombre]);
+                        }, app.error, function(){
+                            app.botonSistemaApp.innerHTML = 'Fracc. agregado : ' + nombre;
+                        });
+                    },
+
+                    insertarZona : function( id, id_fracc, nombre ){
+                        var cadena = 'INSERT INTO zonas(id, fracc_id, nombre) VALUES (?,?,?)';
+                        app.db.transaction(function(tx){
+                            tx.executeSql(cadena, [id, id_fracc, nombre]);
+                        }, app.error, function(){
+                            app.botonSistemaApp.innerHTML = 'Zona agregada : ' + nombre;
+                        });
+                    },
+
+                    insertarMedidor : function( datos ){
+                        var cadena = 'INSERT INTO lecturas(fk, zona_id, medidor, residente, promedio, anterior, actual, fecha) VALUES (?,?,?,?,?,?,?,?)';
+                        app.db.transaction(function(tx){
+                            tx.executeSql(cadena, datos );
+                        }, app.error, function(){
+                            app.botonSistemaApp.innerHTML = 'Medidor agregado : ' + datos[2];
+                        });
+                    },
+
+                    vibrar : function( duracion = 750 ){
+                        navigator.notification.vibrate( duracion );
                     },
 
                     error : function(e){
@@ -223,17 +254,20 @@
 
                     exito : function(){
                         alert('Lecturas del Sistema a la Aplicación sincronizadas correctamente! ')
+                    },
+
+                    salir : function(){
+                        console.log(navigator)
+                        navigator.app.exitApp();
                     }
 
                 };
 
-                
                 document.addEventListener('deviceready', function(){
                     if('addEventListener' in document){
                         app.iniciar();
                     }
                 }, false);
-
             </script>
         </div>
     </body>
