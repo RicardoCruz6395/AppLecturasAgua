@@ -7,18 +7,18 @@
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
 		<link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
 		<link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="images/apple-touch-startup-image-640x1096.png">
-		<meta http-equiv="Content-Security-Policy" content="default-src *; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+		<meta http-equiv="Content-Security-Policy" content="default-src *; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
 		<title>ACD Lecturas</title>
-		<link rel="stylesheet" href="css/themes/default/jquery.mobile-1.4.5.css">
+		<link type="text/css" rel="stylesheet" href="css/themes/default/jquery.mobile-1.4.5.css" />
 		<link type="text/css" rel="stylesheet" href="style.css" />
 		<link type="text/css" rel="stylesheet" href="css/colors/blue.css" />
 		<link type="text/css" rel="stylesheet" href="css/swipebox.css" />
 		<script type="text/javascript" src="js/jquery.min.js"></script>
-		<script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
-		<script type="text/javascript" src="js/jquery.swipebox.js"></script>
-		<script type="text/javascript" src="js/jquery.mobile-custom.js"></script>
-		<script type="text/javascript" src="cordova.js"></script>
-		<script type="text/javascript" src="js/index.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
+        <script type="text/javascript" src="js/jquery.swipebox.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-custom.js"></script>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
 	</head>
 	<body>
 		<div data-role="page" id="homepage" data-theme="b">
@@ -44,33 +44,21 @@
 		                <li>
 		                    <a href="sincronizar.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Sincronizar</span></a>
 		                </li>
-		                <li>
-		                    <a href="contact.html" data-transition="slidefade"><img src="images/icons/white/blog.png" alt="" title="" /><span>Subir</span></a>
-		                </li>
 					</ul>
 				</nav>
 			</div>
 			<div data-role="panel" id="right-panel" data-display="reveal" data-position="right">
 				<div class="user_login_info">
-					<div class="user_thumb_container">
-						<img src="images/profile.jpg" alt="" title="" /> 
-						<div class="user_thumb">
-							<img src="images/author.jpg" alt="" title="" />	 
-						</div>  
-					</div>
-					<div class="user_details">
-						<p>Sarah Williams</p>
-					</div>
-					<nav class="user-nav">
-						<ul>
-							<li><a href="features.html"><img src="images/icons/white/settings.png" alt="" title="" /><span>Settings</span></a></li>
-							<li><a href="features.html"><img src="images/icons/white/briefcase.png" alt="" title="" /><span>Account</span></a></li>
-							<li><a href="features.html"><img src="images/icons/white/message.png" alt="" title="" /><span>Messages</span><strong class="yellow">12</strong></a></li>
-							<li><a href="features.html"><img src="images/icons/white/download.png" alt="" title="" /><span>Downloads</span><strong class="yellow">5</strong></a></li>
-							<li><a href="index.html"><img src="images/icons/white/lock.png" alt="" title="" /><span>Logout</span></a></li>
-						</ul>
-					</nav>
-				</div>
+                    <div class="user_details">
+                        <p id="nombreUsuario"></p>
+                    </div>
+                    <nav class="user-nav">
+                        <ul>
+                            <li><a href="features.html"><img src="images/icons/white/settings.png" /><span>Configuración</span></a></li>
+                            <li><a href="#" onclick="app.salir()"><img src="images/icons/white/lock.png" /><span>Salir</span></a></li>
+                        </ul>
+                    </nav>
+                </div>
 				<div class="close_loginpopup_button"><a href="#" data-rel="close"><img src="images/icons/white/menu_close.png" alt="" title="" /></a></div>  
 			</div>
 			<script type="text/javascript">
@@ -81,17 +69,39 @@
 						window.openDatabase('LecturasAppDB.db', '1.0', 'LecturasAppDB', 200000)
 					,
 
+					nombreUsuario :
+						document.getElementById('nombreUsuario')
+					,
+
 					iniciar : function(){
-						app.db.transaction(app.crearTablas, app.error, app.exito );
+						app.db.transaction(app.crearTablas, app.error, app.consultarUsuario );
 					},
 
 					crearTablas : function(tx){
-						tx.executeSql('DROP TABLE IF EXISTS fraccionamientos');
-						tx.executeSql('DROP TABLE IF EXISTS zonas');
-						tx.executeSql('DROP TABLE IF EXISTS lecturas');
-				        tx.executeSql('CREATE TABLE IF NOT EXISTS fraccionamientos (id, nombre)');
+						tx.executeSql('DROP TABLE fraccionamientos');
+						tx.executeSql('DROP TABLE zonas');
+						tx.executeSql('DROP TABLE lecturas');
+						
+						tx.executeSql('CREATE TABLE IF NOT EXISTS fraccionamientos (id, nombre)');
 				        tx.executeSql('CREATE TABLE IF NOT EXISTS zonas (id, fracc_id, nombre)');
-						tx.executeSql('CREATE TABLE IF NOT EXISTS lecturas (fk, zona_id, medidor, residente, promedio, anterior, actual, fecha)');
+						tx.executeSql('CREATE TABLE IF NOT EXISTS lecturas (fk, zona_id, medidor, residente, promedio, anterior, actual, fecha, modificado)');
+						tx.executeSql('CREATE TABLE IF NOT EXISTS usuario (usuario, clave, token, nombre, teclado)');
+				    },
+
+				    consultarUsuario : function(){
+				    	app.db.transaction(function(tx){
+				    		tx.executeSql('SELECT * FROM usuario WHERE rowid = ?;',["1"],function(tx,result){
+				    			
+				    			if( result.rows.length == 8 ){
+				    				var usuario = result.rows.item(0);
+				    				app.nombreUsuario.innerHTML = usuario.nombre; 
+				    			}else{
+				    				alert('Mandar al login')
+				    				location.href = 'login.html'
+				    			}
+
+				    		});
+				    	}, app.error, app.exito);
 				    },
 
 					exito : function(){
@@ -100,6 +110,10 @@
 
 					error : function(e){
 						alert('Sucedió un error. Código ' + e.code + ': '+ e.message);
+					},
+
+					salir : function(){
+						navigator.app.exitApp();
 					}
 
 				};

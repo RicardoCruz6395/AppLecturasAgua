@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
+        <link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="images/apple-touch-startup-image-640x1096.png">
+        <meta http-equiv="Content-Security-Policy" content="default-src *; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+        <title>ACD Lecturas</title>
+        <link type="text/css" rel="stylesheet" href="css/themes/default/jquery.mobile.-1.4.5.css" />
+        <link type="text/css" rel="stylesheet" href="style.css" />
+        <link type="text/css" rel="stylesheet" href="css/colors/blue.css" />
+        <link type="text/css" rel="stylesheet" href="css/swipebox.css" />
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
+        <script type="text/javascript" src="js/jquery.swipebox.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-custom.js"></script>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+    </head>
+    <body>
+        <div data-role="page" id="login" class="secondarypage" data-theme="b">
+            <div role="main" class="ui-content">
+                <div class="content-block-login">
+                	<div class="form_logo">INICIAR SESIÓN</div>
+                    <div class="loginform">                                
+                        <form id="LoginForm" method="post">
+                            <input type="text" name="username" value="" class="form_input required" placeholder="Usuario" data-role="none" id="username" />
+                            <input type="password" name="password" value="" class="form_input required" placeholder="Contraseña" data-role="none" />
+                            <input type="submit" name="submit" class="form_submit" id="submit" data-role="none" value="ENTRAR" />
+                        </form>
+                        <!--div class="signup_bottom">
+                            <p>Don't have an account?</p>
+                            <a href="register.html" data-transition="slidedown">SIGN UP</a>
+                        </div-->
+                    </div>
+                </div>
+            </div>
+            <script type="text/javascript">
+                var app = {
+
+                    db : 
+                        window.openDatabase('LecturasAppDB.db', '1.0', 'LecturasAppDB', 200000)
+                    ,
+
+                    iniciar : function(){
+                        document.getElementById('username').autofocus;
+                        console.log(document.getElementById('username'))
+                    },
+
+                    vibrar : function(){
+                        navigator.vibrate(700);
+                    },
+
+                    exito : function(){
+                        return false;
+                    },
+
+                    error : function(e){
+                        console.log(e)
+                        alert('Sucedió un error. Código ' + e.code + ': '+ e.message);
+                    },
+
+                    errorScanner : function(err){
+                        alert('Error de scanner: ' + error);
+                    },
+
+                    salir : function(){
+                        navigator.app.exitApp();
+                    }
+
+                };
+
+                document.addEventListener('backbutton', function(){
+                    /*if( localStorage.scanner == null ){
+                        localStorage.setItem('scanner', 'false');
+                        window.history.back();
+                    }*/
+                },true);
+
+                document.addEventListener('deviceready', function(){
+                    if('addEventListener' in document){
+                        app.iniciar();
+                    }
+                }, false);
+            </script>
+        </div>
+    </body>
+</html>

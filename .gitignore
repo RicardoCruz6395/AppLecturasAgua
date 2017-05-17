@@ -1,5 +1,2 @@
-
-platforms/android/
-
 platforms/browser/
-platforms/browser/*.*
+platforms/android/

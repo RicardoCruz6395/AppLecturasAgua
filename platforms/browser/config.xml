@@ -11,6 +11,11 @@
         Control de Sistemas ACD
     </author>
     <content src="index.html" />
+    <icon gap:platform="android" gap:qualifier="ldpi" src="icons/36.png" />
+    <icon gap:platform="android" gap:qualifier="mdpi" src="icons/48.png" />
+    <icon gap:platform="android" gap:qualifier="hdpi" src="icons/72.png" />
+    <icon gap:platform="android" gap:qualifier="xhdpi" src="icons/96.png" />
+    <icon gap:platform="android" gap:qualifier="xxhdpi" src="icons/144.png" />
     <allow-intent href="market:*" />
     <access origin="*" />
     <allow-intent href="*" />

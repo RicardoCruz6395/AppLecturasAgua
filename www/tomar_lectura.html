@@ -7,13 +7,18 @@
         <meta name="apple-mobile-web-app-status-bar-style" content="black">
         <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
         <link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="images/apple-touch-startup-image-640x1096.png">
-        <meta name="author" content="acd.mx" />
-        <meta name="description" content="ACD Lecturas App" />
+        <meta http-equiv="Content-Security-Policy" content="default-src *; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
         <title>ACD Lecturas</title>
-        <link rel="stylesheet" href="css/themes/default/jquery.mobile-1.4.5.css">
+        <link type="text/css" rel="stylesheet" href="css/themes/default/jquery.mobile-1.4.5.css" />
         <link type="text/css" rel="stylesheet" href="style.css" />
         <link type="text/css" rel="stylesheet" href="css/colors/blue.css" />
         <link type="text/css" rel="stylesheet" href="css/swipebox.css" />
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
+        <script type="text/javascript" src="js/jquery.swipebox.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-custom.js"></script>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
     </head>
     <body>
         <div data-role="page" id="contact" class="secondarypage" data-theme="b">
@@ -29,11 +34,15 @@
                     <div class="page_content"> 
         		            <h2 id="Note"></h2>
                         <div class="contactform">
-                            <form class="cmxform" action="#">
+                            <form class="cmxform" action="#" onsubmit="return false;">
                                 <input type="text" id="medidor" value="" class="form_input required" data-role="none" />
-                                <input type="button" class="form_submit" id="submit" data-role="none" value="Buscar" />
+                                <table border="1">
+                                    <tr>
+                                        <td><button type="button" class="form_submit" id="submit">Buscar</button></td>
+                                        <td><button id="scanner">Scanner QR</button></td>
+                                    </tr>
+                                </table>
                             </form>
-                            <button id="scanner">Scanner QR</button>
                         </div>
                         <div id="datosMedidor">
                             
@@ -53,31 +62,19 @@
                         <li>
                             <a href="sincronizar.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Sincronizar</span></a>
                         </li>
-                        <li>
-                            <a href="subir.html" data-transition="slidefade"><img src="images/icons/white/blog.png" alt="" title="" /><span>Subir</span></a>
-                        </li>
                     </ul>
                 </nav>
             </div>
 
             <div data-role="panel" id="right-panel" data-display="reveal" data-position="right">
                 <div class="user_login_info">
-                    <div class="user_thumb_container">
-                        <img src="images/profile.jpg" alt="" title="" /> 
-                        <div class="user_thumb">
-                            <img src="images/author.jpg" alt="" title="" />     
-                        </div>  
-                    </div>
                     <div class="user_details">
                         <p>Sarah Williams</p>
                     </div>
                     <nav class="user-nav">
                         <ul>
-                            <li><a href="features.html"><img src="images/icons/white/settings.png" alt="" title="" /><span>Settings</span></a></li>
-                            <li><a href="features.html"><img src="images/icons/white/briefcase.png" alt="" title="" /><span>Account</span></a></li>
-                            <li><a href="features.html"><img src="images/icons/white/message.png" alt="" title="" /><span>Messages</span><strong class="yellow">12</strong></a></li>
-                            <li><a href="features.html"><img src="images/icons/white/download.png" alt="" title="" /><span>Downloads</span><strong class="yellow">5</strong></a></li>
-                            <li><a href="index.html"><img src="images/icons/white/lock.png" alt="" title="" /><span>Logout</span></a></li>
+                            <li><a href="features.html"><img src="images/icons/white/settings.png" /><span>Configuración</span></a></li>
+                            <li><a href="#" onclick="app.salir()"><img src="images/icons/white/lock.png" /><span>Salir</span></a></li>
                         </ul>
                     </nav>
                 </div>
@@ -106,16 +103,11 @@
                     color: #FFF;
                     text-align: center;
                     font-weight: bold;
-                    padding: 2px 14px;
+                    padding: 4px 16px;
 
                 }
             </style>
-            <script src="js/jquery.min.js"></script>
-            <script src="js/jquery.mobile-1.4.5.min.js"></script>
-            <script type="text/javascript" src="js/jquery.swipebox.js"></script>
-            <script src="js/jquery.mobile-custom.js"></script>
-            <script type="text/javascript" src="cordova.js"></script>
-            <script type="text/javascript" src="js/index.js"></script>
+            
             <script type="text/javascript">
                 
                 var app = {
@@ -170,12 +162,13 @@
 
                     buscarMedidor : function(){
                         var medidor = app.inputMedidor.value;
-                        if( medidor != ''){
+                        if( medidor.trim() != ''){
                             app.db.transaction(function(tx){
                                 tx.executeSql('SELECT * FROM lecturas WHERE medidor = ?;', [medidor], app.evaluarInformacion, app.error);
                             }, app.error, app.exito);
                         }else{
                             app.vibrar();
+                            app.inputMedidor.value;
                             navigator.notification.alert('Ingrese un medidor o use el scanner', function(){}, '¡ ATENCIÓN !', 'Aceptar');
                         }
                     },
@@ -207,11 +200,11 @@
                             var datos = {
                                 medidor   : medidor.medidor,
                                 residente : medidor.residente,
-                                anterior  : medidor.anterior + ' m3',
-                                actual    : (medidor.actual == -1) ? '- - -' : medidor.actual +' m3',
-                                consumo   : (medidor.actual == -1) ? '- - -' : (medidor.actual-medidor.anterior) +' m3',
+                                anterior  : medidor.anterior + ' m<sup>3</sup>',
+                                actual    : (medidor.actual == -1) ? '- - -' : medidor.actual +' m<sup>3</sup>',
+                                consumo   : (medidor.actual == -1) ? '- - -' : (medidor.actual-medidor.anterior) +' m<sup>3</sup>',
                                 fecha     : (medidor.fecha == -1) ? '- - -' : medidor.fecha,
-                                promedio  : medidor.promedio +' m3',
+                                promedio  : medidor.promedio +' m<sup>3</sup>',
                                 boton     : '<a class="editar" onclick="app.editarLectura('+medidor.fk+')">EDITAR</a>'
                             };
                             info += app.dibujarInformacion( datos );
@@ -237,19 +230,22 @@
                         var mensaje = 'Inserte lectura mayor/igual a '+medidor.anterior+' m3: ';
 
                         navigator.notification.prompt(mensaje, function(data){
-                            var lectura = parseInt( data.input1 )
+                            if( data.buttonIndex == 1){
+                                var lectura = parseInt( data.input1 )
 
-                            if( !isNaN(lectura) ){
-                                if( lectura >= medidor.anterior ){
-                                    app.insertarLectura( medidor, lectura);
+                                if( !isNaN(lectura) ){
+                                    if( lectura >= medidor.anterior ){
+                                        app.insertarLectura( medidor, lectura);
+                                    }else{
+                                        app.vibrar();
+                                        app.solicitarLectura( medidor );                        
+                                    }
                                 }else{
-                                    app.solicitarLectura( medidor );                        
+                                    app.vibrar();
+                                    navigator.notification.alert('Ingrese una lectura correcta', function(){
+                                        app.solicitarLectura(medidor);
+                                    }, 'LECTURA INCORRECTA', 'Aceptar');
                                 }
-                            }else{
-                                app.vibrar();
-                                navigator.notification.alert('Ingrese una lectura correcta', function(){
-                                    app.solicitarLectura(medidor);
-                                }, 'LECTURA INCORRECTA', 'Aceptar');
                             }
                         }, 'INGRESAR LECTURA', ['Aceptar', 'Cancelar']);
                     },
@@ -263,14 +259,12 @@
                     },
 
                     editarLectura : function( fk ){
-                        alert(fk);
+                        fk = fk.toString();
                         app.db.transaction(function(tx){
-                            tx.executeSql('SELECT medidor FROM lecturas WHERE fk = ?;', [fk], app.solicitarDeNuevo, app.error);
+                            tx.executeSql('SELECT * FROM lecturas WHERE fk = ?;', [fk], function(tx, results){
+                                app.solicitarLectura( results.rows.item(0) );
+                            }, app.error);
                         }, app.error, app.exito);
-                    },
-
-                    solicitarDeNuevo : function(tx, results){
-                        app.solicitarLectura( results.rows.item(0) );
                     },
 
                     fechaActual : function(){
@@ -282,11 +276,11 @@
                         if(dd<10){ dd='0'+dd; } 
                         if(mm<10){ mm='0'+mm; }
 
-                        return yyyy+'-'+mm+'-'+dd;
+                        return yyyy + '-' + mm + '-' + dd;
                     },
 
-                    vibrar : function( duracion = 750 ){
-                        navigator.notification.vibrate( duracion );
+                    vibrar : function(){
+                        navigator.vibrate(700);
                     },
 
                     exito : function(){
@@ -300,6 +294,10 @@
 
                     errorScanner : function(err){
                         alert('Error de scanner: ' + error);
+                    },
+
+                    salir : function(){
+                        navigator.app.exitApp();
                     }
 
                 };

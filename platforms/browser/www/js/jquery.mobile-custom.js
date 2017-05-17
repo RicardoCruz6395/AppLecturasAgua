@@ -27,26 +27,6 @@ $(document).on("pageshow", function () {
 	 
 });
 
-	
-$( document ).delegate("#photos", "pagecreate", function() {
-  $(".swipebox").swipebox();
-});
-
-$( document ).delegate("#blog", "pagecreate", function() {
-		$(".posts li").hide();	
-		size_li = $(".posts li").size();
-		x=4;
-		$('.posts li:lt('+x+')').show();
-		$('#loadMore').click(function () {
-			x= (x+2 <= size_li) ? x+2 : size_li;
-			$('.posts li:lt('+x+')').show();
-			if(x == size_li){
-				$('#loadMore').hide();
-				$('#showLess').show();
-			}
-			$("html, body").animate({ scrollTop: $(document).height() }, 1000);
-		});
-});
 
 $.widget( "ui.tabs", $.ui.tabs, {
 
