@@ -946,8 +946,12 @@ font-weight:400;
 padding:3%; 
 width:93%; 
 margin:0 0 5px 0;
+text-align: center;
+font-weight: bold;
+font-size: 16px;
 border:1px solid #ddd;
 -webkit-appearance: none;
+letter-spacing: 3px;
 }
 .loginform input.form_submit{ 
 width:100%;
@@ -987,27 +991,6 @@ font-weight:700;
 width:100%;
 text-align:center;
 padding:20px 0 0 0;
-}
-a.signup_facebook{
-background-color:#38579a;
--webkit-border-radius:10px;-moz-border-radius:10px;border-radius:10px;
-width:47%;
-display:inline-block;
-padding:10px 0;
-margin:0 4% 0 0;
-color:#FFFFFF;
-font-size:12px;
-font-weight:700;
-}
-a.signup_twitter{
-background-color:#0cacea;
--webkit-border-radius:10px;-moz-border-radius:10px;border-radius:10px;
-width:47%;
-padding:10px 0;
-display:inline-block;
-color:#FFFFFF;
-font-size:12px;
-font-weight:700;
 }
 .close_loginpopup_button{
 display:block;

@@ -78,25 +78,24 @@
 					},
 
 					crearTablas : function(tx){
-						tx.executeSql('DROP TABLE fraccionamientos');
-						tx.executeSql('DROP TABLE zonas');
-						tx.executeSql('DROP TABLE lecturas');
+						//tx.executeSql('DROP TABLE fraccionamientos');
+						//tx.executeSql('DROP TABLE zonas');
+						//tx.executeSql('DROP TABLE lecturas');
 						
 						tx.executeSql('CREATE TABLE IF NOT EXISTS fraccionamientos (id, nombre)');
 				        tx.executeSql('CREATE TABLE IF NOT EXISTS zonas (id, fracc_id, nombre)');
 						tx.executeSql('CREATE TABLE IF NOT EXISTS lecturas (fk, zona_id, medidor, residente, promedio, anterior, actual, fecha, modificado)');
-						tx.executeSql('CREATE TABLE IF NOT EXISTS usuario (usuario, clave, token, nombre, teclado)');
+						tx.executeSql('CREATE TABLE IF NOT EXISTS usuario (token, nombre, teclado)');
 				    },
 
 				    consultarUsuario : function(){
 				    	app.db.transaction(function(tx){
-				    		tx.executeSql('SELECT * FROM usuario WHERE rowid = ?;',["1"],function(tx,result){
+				    		tx.executeSql('SELECT * FROM usuario WHERE rowid = ?;',['1'],function(tx,result){
 				    			
-				    			if( result.rows.length == 8 ){
+				    			if( result.rows.length == 1 ){
 				    				var usuario = result.rows.item(0);
 				    				app.nombreUsuario.innerHTML = usuario.nombre; 
 				    			}else{
-				    				alert('Mandar al login')
 				    				location.href = 'login.html'
 				    			}
 

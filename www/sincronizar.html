@@ -90,9 +90,14 @@
                         document.getElementById('appSistema')
                     ,
 
+                    medidoresAgregadosA : 0 ,
+                    medidoresAgregadosB : 0 ,
+
                     cambiarBotones : function(){
                         app.botonAppSistema.disabled = !app.botonAppSistema.disabled;
                         app.botonSistemaApp.disabled = !app.botonSistemaApp.disabled;
+                        app.medidoresAgregadosA = 0;
+                        app.medidoresAgregadosB = 0;
                     },
 
                     iniciar : function(){
@@ -115,12 +120,12 @@
                         console.log('Connection type: ' + states[networkState]);
 
 
-                        if( networkState != Connection.NONE && networkState != Connection.UNKNOWN ){
+                        if( networkState != Connection.NONE || networkState != Connection.UNKNOWN ){
                             return true;
                         }else{
                             navigator.notification.beep(1);
                             app.vibrar();
-                            //navigator.notification.alert('No cuenta con conexión a Internet. Intente de nuevo', function(){},'¡ ATENCIÓN !','Aceptar')
+                            navigator.notification.alert('No cuenta con conexión a Internet. Intente de nuevo', function(){},'¡ ATENCIÓN !','Aceptar')
                             return false;
                         }
 
@@ -132,31 +137,41 @@
                             navigator.notification.beep(1);
                             app.vibrar();
                             navigator.notification.confirm('Se reemplazarán las lecturas de la aplicación que no haya subido al sistema. ¿Continuar?',function( btn ){
-                                    /* input :
-                                        1 -> ok
-                                        2 -> cancel
-                                    */
-                                    if( btn == 1 ){
-                                        var request = $.ajax({
-                                            type: 'POST',
-                                            crossDomain: true,
-                                            url: 'http://app.acd.mx/',
-                                            beforeSend : app.cambiarBotones,
-                                            success : app.vaciarTablas,
-                                        });
+                                    /* btn : 1 -> ok, 2 -> cancel */
+                                if( btn == 1 ){
 
-                                        request.fail(function (jqXHR, textStatus, errorThrown){
-                                            alert('Error en petición: ' + textStatus);
-                                            app.cambiarBotones();
-                                        });
-                                    }
+                                    app.db.transaction(function(tx){
+                                        tx.executeSql('SELECT token FROM usuario WHERE rowid = ?;',['1'],function(tx, result){
+                                            if( result.rows.length == 1 ){
+                                                token = result.rows.item(0).token;
+                                                datos = { _action : 1, _token : token }
+
+                                                var request = $.ajax({
+                                                    type: 'POST',
+                                                    crossDomain: true,
+                                                    url: 'http://app.acd.mx/',
+                                                    data : datos,
+                                                    beforeSend : app.cambiarBotones,
+                                                    success : app.vaciarTablas,
+                                                });
+
+                                                request.fail(function (jqXHR, textStatus, errorThrown){
+                                                    alert('Error en petición: ' + textStatus);
+                                                    app.cambiarBotones();
+                                                });
+                                            }else{
+                                                location.href = 'login.html'
+                                            }
+                                        }, app.error);
+                                    },app.error);
+                                }
                             },'¡ ATENCIÓN !', ['Aceptar','Cancelar']);
                         }
                         
                     },
 
                     sincronizarAppSistema : function(){
-                        if( !app.checarConexion() ){
+                        if( app.checarConexion() ){
                             app.db.transaction( function(tx){
                                 tx.executeSql('SELECT * FROM lecturas WHERE modificado = "1";',[],function(tx, results){
                                     console.log(results.rows)
@@ -193,65 +208,76 @@
                         }
                     },
 
+                    recuperarToken : function(){
+
+                    },
+
                     vaciarTablas : function( informacionRecibida ){
-                        app.db.transaction(function(tx){
-                            tx.executeSql('DELETE FROM fraccionamientos');
-                            tx.executeSql('DELETE FROM zonas');
-                            tx.executeSql('DELETE FROM lecturas');
-                        }, app.error, app.guardarMedidoresEnApp( informacionRecibida ) );
+                        if( informacionRecibida.request ){
+                            app.db.transaction(function(tx){
+                                tx.executeSql('DELETE FROM fraccionamientos');
+                                tx.executeSql('DELETE FROM zonas');
+                                tx.executeSql('DELETE FROM lecturas');
+                            }, app.error, app.guardarMedidoresEnApp( informacionRecibida.medidores ) );
+                        }else{
+                            navigator.notification.alert('Token inválido. No es posible realizar la sincronización.',function(){
+                                app.cambiarBotones();
+                            },'¡ ATENCIÓN !','Aceptar');
+                        }
                     },
                     
                     guardarMedidoresEnApp : function( medidores ){
                         app.vibrar();
                         navigator.notification.alert('Se han eliminado las lecturas de la aplicación',function(){
+                            app.medidoresAgregadosA += Object.keys(medidores).length
 
-                            if( app.guardarMedidores(medidores) ){
-                                alert('Sincronización terminada')
-                                app.cambiarBotones();
-                            }
-                            
-                        },'¡ ATENCIÓN !','Aceptar')
-                    },
+                            for (var id_fracc in medidores ) {
+                                console.log('sumando A = '+ Object.keys(medidores).length )
 
-                    guardarMedidores : function( medidores ){
-                        for (var id_fracc in medidores ) {
+                                // Insertar el fraccionamiento
+                                var fraccionamiento = medidores[id_fracc];
+                                
+                                app.insertarFraccionamiento( id_fracc, fraccionamiento.nombre );
+                                // Preguntar si hay zonas en el fraccionamiento
+                                if( typeof fraccionamiento.zonas === "object"){
+                                    console.log('sumando B = '+ Object.keys(fraccionamiento.zonas).length )
 
-                            // Insertar el fraccionamiento
-                            var fraccionamiento = medidores[id_fracc];
-                            
-                            app.insertarFraccionamiento( id_fracc, fraccionamiento.nombre );
-                            // Preguntar si hay zonas en el fraccionamiento
-                            if( typeof fraccionamiento.zonas === "object"){
-                                var zonas = fraccionamiento.zonas;
-                                for (var id_zona in zonas ) {
-                                    // Insertar zona del fraccionamiento
-                                    var zona = zonas[id_zona];
+                                    app.medidoresAgregadosA += Object.keys(fraccionamiento.zonas).length
                                     
-                                    app.insertarZona( id_zona, id_fracc, zona.nombre );
-                                    // Preguntar si la zona tiene medidores
-                                    if( typeof zona.lecturas === "object"){
-                                        var lecturas = zona.lecturas;
-                                        for (var fk_residente in lecturas ) {
-                                            // Insertar medidor de la zona
-                                            // 0 -> Medidor
-                                            // 1 -> Nombre de residente
-                                            // 2 -> Lectura anterior
-                                            // 3 -> Lectura nueva
-                                            // 4 -> Consumo
-                                            // 5 -> Promedio
-                                            // 6 -> Diferencia
-                                            // 7 -> Fecha
-                                            // 8 -> Hora
-                                            
-                                            var medidor = lecturas[ fk_residente ];
-                                            var datos = [ fk_residente, id_zona, medidor[0], medidor[1], medidor[5], medidor[2], medidor[3], medidor[7], 0 ];
-                                            app.insertarMedidor( datos );
+                                    var zonas = fraccionamiento.zonas;
+                                    for (var id_zona in zonas ) {
+                                        // Insertar zona del fraccionamiento
+                                        var zona = zonas[id_zona];
+                                        
+                                        app.insertarZona( id_zona, id_fracc, zona.nombre );
+                                        // Preguntar si la zona tiene medidores
+                                        if( typeof zona.lecturas === "object"){
+                                    console.log('sumando C = '+ Object.keys(zona.lecturas).length )
+
+                                            app.medidoresAgregadosA += Object.keys(zona.lecturas).length
+                                            var lecturas = zona.lecturas;
+                                            for (var fk_residente in lecturas ) {
+                                                // Insertar medidor de la zona
+                                                // 0 -> Medidor
+                                                // 1 -> Nombre de residente
+                                                // 2 -> Lectura anterior
+                                                // 3 -> Lectura nueva
+                                                // 4 -> Consumo
+                                                // 5 -> Promedio
+                                                // 6 -> Diferencia
+                                                // 7 -> Fecha
+                                                // 8 -> Hora
+                                                
+                                                var medidor = lecturas[ fk_residente ];
+                                                var datos = [ fk_residente, id_zona, medidor[0], medidor[1], medidor[5], medidor[2], medidor[3], medidor[7], 0 ];
+                                                app.insertarMedidor( datos );
+                                            }
                                         }
                                     }
                                 }
                             }
-                        }
-                        return true;
+                            
+                        },'¡ ATENCIÓN !','Aceptar');
                     },
 
                     insertarFraccionamiento : function( id, nombre ){
@@ -260,6 +286,7 @@
                             tx.executeSql(cadena, [id, nombre]);
                         }, app.error, function(){
                             app.botonSistemaApp.innerHTML = 'Fraccionamiento : ' + nombre;
+                            app.revisarConteo();
                         });
                     },
 
@@ -269,6 +296,7 @@
                             tx.executeSql(cadena, [id, id_fracc, nombre]);
                         }, app.error, function(){
                             app.botonSistemaApp.innerHTML = 'Zona agregada : ' + nombre;
+                            app.revisarConteo();
                         });
                     },
 
@@ -278,7 +306,20 @@
                             tx.executeSql(cadena, datos );
                         }, app.error, function(){
                             app.botonSistemaApp.innerHTML = 'Medidor agregado : ' + datos[2];
+                            app.revisarConteo();
                         });
+                    },
+
+                    revisarConteo : function(){
+                        app.medidoresAgregadosB++;
+                        console.log( app.medidoresAgregadosA +'=='+ app.medidoresAgregadosB )
+                        
+                        if( app.medidoresAgregadosA == app.medidoresAgregadosB ){
+                            navigator.notification.alert('Lecturas sincronizadas correctamente',function(){
+                                app.botonSistemaApp.innerHTML = 'Sistema &rarr; Aplicación';
+                                app.cambiarBotones();
+                            },'¡ ÉXITO !','Aceptar');
+                        }
                     },
                     
                     vibrar : function(){
@@ -290,7 +331,7 @@
                     },
 
                     exito : function(){
-                        alert('Lecturas del Sistema a la Aplicación sincronizadas correctamente! ')
+                        //alert('Lecturas del Sistema a la Aplicación sincronizadas correctamente! ')
                     },
 
                     salir : function(){

@@ -132,6 +132,23 @@
                         var botonScanner = document.getElementById('scanner');
                         botonScanner.addEventListener('click', app.iniciarScanner);
                         app.botonSubmit.addEventListener('click', app.buscarMedidor);
+                        app.buscarTipoInput();
+                    },
+
+                    buscarTipoInput : function(){
+                        app.db.transaction(function(tx){
+                            tx.executeSql('SELECT token, teclado FROM usuario WHERE rowid = ?;',['1'],function(tx, result){
+                                if( result.rows.length == 1 ){
+                                    if( result.rows.item(0).token != '' ){
+                                        app.inputMedidor.type = result.rows.item(0).teclado
+                                    }else{
+                                        app.redireccionar();
+                                    }
+                                }else{
+                                    app.redireccionar();
+                                }
+                            }, app.error);
+                        },app.error, app.exito);
                     },
 
                     iniciarScanner : function(){
@@ -285,6 +302,10 @@
 
                     exito : function(){
                         return false;
+                    },
+
+                    redireccionar : function(){
+                        location.href = 'login.html'
                     },
 
                     error : function(e){

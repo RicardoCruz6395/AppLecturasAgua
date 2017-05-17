@@ -9,7 +9,7 @@
         <link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="images/apple-touch-startup-image-640x1096.png">
         <meta http-equiv="Content-Security-Policy" content="default-src *; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
         <title>ACD Lecturas</title>
-        <link type="text/css" rel="stylesheet" href="css/themes/default/jquery.mobile.-1.4.5.css" />
+        <link type="text/css" rel="stylesheet" href="css/themes/default/jquery.mobile-1.4.5.css" />
         <link type="text/css" rel="stylesheet" href="style.css" />
         <link type="text/css" rel="stylesheet" href="css/colors/blue.css" />
         <link type="text/css" rel="stylesheet" href="css/swipebox.css" />
@@ -17,24 +17,21 @@
         <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
         <script type="text/javascript" src="js/jquery.swipebox.js"></script>
         <script type="text/javascript" src="js/jquery.mobile-custom.js"></script>
+        <script type="text/javascript" src="js/md5.min.js"></script>
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
     </head>
     <body>
         <div data-role="page" id="login" class="secondarypage" data-theme="b">
-            <div role="main" class="ui-content">
+            <div role="main" class="ui-content" id="viewLogin" style="display: none;">
                 <div class="content-block-login">
                 	<div class="form_logo">INICIAR SESIÓN</div>
                     <div class="loginform">                                
-                        <form id="LoginForm" method="post">
-                            <input type="text" name="username" value="" class="form_input required" placeholder="Usuario" data-role="none" id="username" />
-                            <input type="password" name="password" value="" class="form_input required" placeholder="Contraseña" data-role="none" />
-                            <input type="submit" name="submit" class="form_submit" id="submit" data-role="none" value="ENTRAR" />
+                        <form action="#" onsubmit="return false;">
+                            <input type="text" class="form_input required" placeholder="Usuario" id="username" data-role="none" />
+                            <input type="password" class="form_input required" placeholder="Contraseña" id="password" data-role="none" />
+                            <input type="button" class="form_submit" id="submit" value="ENTRAR" data-role="none" onclick="app.validarForm()" />
                         </form>
-                        <!--div class="signup_bottom">
-                            <p>Don't have an account?</p>
-                            <a href="register.html" data-transition="slidedown">SIGN UP</a>
-                        </div-->
                     </div>
                 </div>
             </div>
@@ -45,9 +42,120 @@
                         window.openDatabase('LecturasAppDB.db', '1.0', 'LecturasAppDB', 200000)
                     ,
 
+                    inputUser :
+                        document.getElementById('username')
+                    ,
+
+                    inputPassword :
+                        document.getElementById('password')
+                    ,
+
                     iniciar : function(){
-                        document.getElementById('username').autofocus;
-                        console.log(document.getElementById('username'))
+                        app.verificarUsuario();
+                    },
+
+                    verificarUsuario : function(){
+                        app.db.transaction(function(tx){
+                            tx.executeSql('SELECT token FROM usuario WHERE rowid = ?;',['1'],function(tx, result){
+                                if( result.rows.length == 1 ){
+                                    if( result.rows.item(0).token != '' ){
+                                        app.redireccionar();
+                                    }
+                                }
+                            }, app.error);
+                        },app.error, app.exito);
+                    },
+
+                    checarConexion : function(){
+                        var networkState = navigator.connection.type;
+
+                        var states = {};
+                        states[Connection.UNKNOWN]  = 'Unknown connection';
+                        states[Connection.ETHERNET] = 'Ethernet connection';
+                        states[Connection.WIFI]     = 'WiFi connection';
+                        states[Connection.CELL_2G]  = 'Cell 2G connection';
+                        states[Connection.CELL_3G]  = 'Cell 3G connection';
+                        states[Connection.CELL_4G]  = 'Cell 4G connection';
+                        states[Connection.CELL]     = 'Cell generic connection';
+                        states[Connection.NONE]     = 'No network connection';
+                        console.log('Connection type: ' + states[networkState]);
+
+
+                        if( networkState != Connection.NONE && networkState != Connection.UNKNOWN ){
+                            return true;
+                        }else{
+                            navigator.notification.beep(1);
+                            app.vibrar();
+                            navigator.notification.alert('No cuenta con conexión a Internet. Intente de nuevo', function(){},'¡ ATENCIÓN !','Aceptar')
+                            return false;
+                        }
+
+                    },
+
+                    validarForm : function(){
+                        if( app.checarConexion() ){
+                            user = app.inputUser.value;
+                            pass = app.inputPassword.value;
+
+                            if( user.trim() != '' && pass.trim() != ''  ){
+                                user = md5(user);
+                                pass = md5(pass);
+                                app.login(user, pass);
+                            }else{
+                                app.vibrar();
+                                navigator.notification.alert('Ingrese su usuario y contraseña', function(){
+                                    app.inputUser.value = '';
+                                    app.inputPassword.value = '';
+                                }, '¡ ATENCIÓN !', 'Aceptar');
+                            }
+                        }else{
+
+                        }
+                    },
+
+                    login : function(user, pass){
+
+                        datos = { _action : 0, _user : user, _pass : pass }
+
+                        var request = $.ajax({
+                            type: 'POST',
+                            crossDomain: true,
+                            url: 'http://app.acd.mx/',
+                            data : datos,
+                            beforeSend : app.cambiarBoton,
+                            success : app.verificarLogin,
+                        });
+
+                        request.fail(function (jqXHR, textStatus, errorThrown){
+                            alert('Error en petición: ' + textStatus);
+                            app.cambiarBoton();
+                        });
+                    },
+
+                    verificarLogin : function(data){
+                        if( data.login ){
+                            app.guardarUsuario(data.token, data.nombre, data.teclado);
+                        }else{
+                            navigator.notification.alert('Usuario y/o contraseña incorrectos. Intente de nuevo', function(){
+                            }, '¡ ATENCIÓN !', 'Aceptar');
+                        }
+                    },
+
+                    guardarUsuario : function(token, nombre, teclado){
+                        app.db.transaction(function(tx){
+                            tx.executeSql('DELETE FROM usuario')
+                            tx.executeSql('INSERT INTO usuario (token, nombre, teclado) VALUES (?,?,?);',[token, nombre, teclado], function(){
+                                app.redireccionar();
+                            }, app.error);
+                        }, app.error, app.exito);
+                    },
+
+                    redireccionar : function(){
+                        location.href = 'index.html'
+                    },
+
+                    cambiarBoton : function(){
+
                     },
 
                     vibrar : function(){
@@ -55,7 +163,7 @@
                     },
 
                     exito : function(){
-                        return false;
+                        document.getElementById('viewLogin').style.display = 'block'
                     },
 
                     error : function(e){
@@ -72,13 +180,6 @@
                     }
 
                 };
-
-                document.addEventListener('backbutton', function(){
-                    /*if( localStorage.scanner == null ){
-                        localStorage.setItem('scanner', 'false');
-                        window.history.back();
-                    }*/
-                },true);
 
                 document.addEventListener('deviceready', function(){
                     if('addEventListener' in document){
