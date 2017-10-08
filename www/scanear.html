@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
+        <link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="images/apple-touch-startup-image-640x1096.png">
+        <meta http-equiv="Content-Security-Policy" content="default-src *; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+        <title>ACD Lecturas</title>
+        <link type="text/css" rel="stylesheet" href="css/themes/default/jquery.mobile-1.4.5.css" />
+        <link type="text/css" rel="stylesheet" href="style.css" />
+        <link type="text/css" rel="stylesheet" href="css/colors/blue.css" />
+        <link type="text/css" rel="stylesheet" href="css/swipebox.css" />
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
+        <script type="text/javascript" src="js/jquery.swipebox.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-custom.js"></script>
+        <script type="text/javascript" src="cordova.js"></script>
+    </head>
+    <body>
+        <div data-role="page" id="scanear" class="secondarypage" data-theme="b">
+            <style>
+                table {
+                    width: 94%;
+                    margin: 0 auto;
+                }
+
+                td {
+                    padding: 2px 5px;
+                }
+                .right {
+                    text-align: right;
+                }
+
+                .center{
+                    text-align: center;
+                }
+
+                .red {
+                    color: #FF0000;
+                }
+
+                .editar {
+                    background-color : #00F;
+                    color: #FFF;
+                    text-align: center;
+                    font-weight: bold;
+                    padding: 4px 16px;
+                    letter-spacing: 2px;
+                    border-radius: 3px;
+                }
+            </style>
+            <div data-role="header" data-position="fixed">
+                <div class="nav_left_button"><a href="#" class="nav-toggle"><span></span></a></div>
+                <div class="nav_center_logo">SCANEAR</div>
+                <div class="nav_right_button"><a href="#right-panel"><img src="images/icons/white/user.png" alt="" title="" /></a></div>
+                <div class="clear"></div>
+            </div>
+            <div role="main" class="ui-content">
+               <div class="pages_maincontent">
+                    <div class="page_content">
+                        <div class="contactform" id="form_ingresar">
+                            <div class="form_logo red" id="dMedidor"></div>
+                            <label id="lMensaje" class="center"></label>
+                            <form class="cmxform" id="ContactForm" onsubmit="return false;">
+                                <input type="number" id="lectura_actual" class="form_input" data-role="none" />
+                                <table>
+                                    <tr>
+                                        <td width="50%"><button type="button" id="aceptar">Aceptar</button></td>
+                                        <td width="50%"><button type="button" id="cancelar">Cancelar</button></td>
+                                    </tr>
+                                </table>
+                            </form>
+                        </div>
+
+        		        <div id="datosMedidor"></div>
+                        <button type="button" id="scan">
+                            <table>
+                                <tr>
+                                    <td width="33%">Scanner</td>
+                                    <td width="33%"><center><img src="images/icons/white/photos.png" width="30%" /></center></td>
+                                    <td width="33%">QR</td>
+                                </tr>
+                            </table>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div data-role="panel" id="left-panel" data-display="reveal" data-position="left">
+                <nav class="main-nav">
+                    <ul>
+                        <li>
+                            <a href="bajar.html" data-transition="slidefade">
+                                <img src="images/icons/white/download.png" />
+                                <span>Bajar lecturas</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="scanear.html" data-transition="slidefade">
+                                <img src="images/icons/white/photos.png" />
+                                <span>Scanear</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="lista.html" data-transition="slidefade">
+                                <img src="images/icons/white/toggle.png" />
+                                <span>Lista de lecturas</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="subir.html" data-transition="slidefade">
+                                <img src="images/icons/white/responsive.png" />
+                                <span>Subir lecturas</span>
+                            </a>
+                        </li>
+                    </ul>
+                    </ul>
+                </nav>
+            </div>
+            <div data-role="panel" id="right-panel" data-display="reveal" data-position="right">
+                <div class="user_login_info">
+                    <div class="user_details">
+                        <p id="nombreUsuario3"></p>
+                    </div>
+                    <nav class="user-nav">
+                        <ul>
+                            <li><a href="#" onclick="app.logout()"><img src="images/icons/white/user.png" /><span>Cerrar sesión</span></a></li>
+                            <li><a href="#" onclick="app.exit()"><img src="images/icons/white/lock.png" /><span>Salir</span></a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="close_loginpopup_button"><a href="#" data-rel="close"><img src="images/icons/white/menu_close.png" alt="" title="" /></a></div>  
+            </div>
+            <script type="text/javascript" src="js/index.js"></script>
+            <script type="text/javascript">
+
+                var app = Object.create(application);
+                
+                app.formIngresar = document.getElementById('form_ingresar');
+                app.inputLectura = document.getElementById('lectura_actual');
+                app.datosMedidor = document.getElementById('datosMedidor');
+                app.buttonScan   = document.getElementById('scan');
+                app.buttonAceptar = document.getElementById('aceptar');
+                app.buttonCancelar = document.getElementById('cancelar');
+
+                app.iniciar = function(){
+                    app.verificarSesion( document.getElementById('nombreUsuario3') );
+                    app.buttonScan.addEventListener('click', app.iniciarScanner, false);
+                    app.buttonAceptar.addEventListener('click', app.aceptar, false);
+                    app.buttonCancelar.addEventListener('click', app.cancelar, false);
+
+                    app.formIngresar.style.display = 'none'
+                    app.buttonScan.style.display = 'none'
+                    app.datosMedidor.style.display = 'none'
+
+                    medidor = storeObject.medidorAsignado
+                    //medidor = 'BTC0301'
+                    if( medidor != '' ){
+                        app.buscarMedidor( medidor )
+                    }else{
+                        app.iniciarScanner()
+                    }
+                };
+
+                app.aceptar = function(){
+                    lectura = app.inputLectura.value;
+
+                    var lectura = parseInt( lectura )
+
+                    if( !isNaN(lectura) ){
+                        medidor = storeObject.medidorAsignado
+                        //medidor = 'BTC0301'
+                        app.db.transaction(function(tx){
+                            tx.executeSql('SELECT * FROM lecturas WHERE medidor = ?;', [medidor], function(tx,result){
+                                medidor = result.rows.item(0)
+                                if( lectura >= medidor.anterior ){
+
+                                    consumo = lectura - medidor.anterior
+                                    promedio = medidor.promedio * 1.5
+
+                                    if( consumo >= promedio ){
+                                        navigator.notification.confirm('La lectura ingresada excede del consumo promedio del residente. ¿Aún así desea guardar la lectura?',function(btn){
+                                            /* btn : 1 -> ok, 2 -> cancel */
+                                            if( btn == 1 ){
+                                                app.insertarLectura( medidor, lectura);
+                                            }
+                                        },'¡ ATENCIÓN !',['Aceptar', 'Cancelar'])
+                                    }else{
+                                        app.insertarLectura( medidor, lectura);
+                                    }
+                                }else{
+                                    app.vibrar();
+                                    navigator.notification.alert('Ingrese una lectura mayor ≥ a la anterior ', function(){
+                                        app.inputLectura.value = ''
+                                    }, 'LECTURA INCORRECTA', 'Aceptar');
+                                }
+                            });
+                        }, app.errorSQL);
+
+                    }else{
+                        app.vibrar();
+                        navigator.notification.alert('Ingrese una lectura correcta', function(){
+                            app.inputLectura.value = ''
+                        }, 'LECTURA INCORRECTA', 'Aceptar');
+                    }
+                };
+
+                app.cancelar = function(){
+                    app.formIngresar.style.display = 'none'
+                    app.buttonScan.style.display = 'block'
+                    storeObject.medidorAsignado = ''
+                };
+                
+                app.iniciarScanner = function(){
+                    cordova.plugins.barcodeScanner.scan(
+                        function (result) {
+                            if( !result.cancelled ){
+                                cadena = result.text;
+                                resultado = cadena.substr(8, cadena.indexOf("*") - 8 );
+                                app.buscarMedidor( resultado );
+                            }else{
+                                app.buttonScan.style.display = 'block'
+                            }
+                        },
+                        function(error){
+                            alert('Error de scanner: ' + error);
+                        },
+                        {
+                            preferFrontCamera : false, // iOS and Android
+                            showFlipCameraButton : true, // iOS and Android
+                            showTorchButton : true, // iOS and Android
+                            torchOn: false, // Android, launch with the torch switched on (if available)
+                            prompt : "Por favor enfoque el QR del medidor", // Android
+                            resultDisplayDuration: 500, // Android, display scanned text for X ms. 0 suppresses it entirely, default 1500
+                            formats : "QR_CODE,PDF_417", // default: all but PDF_417 and RSS_EXPANDED
+                            orientation : "portrait", // Android only (portrait|landscape), default unset so it rotates with the device
+                            disableAnimations : true, // iOS
+                            disableSuccessBeep: false // iOS
+                        }
+                    );
+                };
+
+                app.buscarMedidor = function( medidor ){
+                    storeObject.medidorAsignado = medidor
+                    app.buttonScan.style.display = 'none'
+                    app.formIngresar.style.display = 'none'
+                    app.datosMedidor.style.display = 'none'
+
+                    app.db.transaction(function(tx){
+                        tx.executeSql('SELECT * FROM lecturas WHERE medidor = ?;', [medidor], app.evaluarInformacion);
+                    }, app.errorSQL);
+                };
+
+                app.evaluarInformacion = function(tx, resultados){
+                    var longitud = resultados.rows.length;
+                    if( longitud == 1 ){
+                        var medidor = resultados.rows.item(0);
+                        if( medidor.actual == -1 ){
+                            app.solicitarLectura( medidor );
+                        }else{
+                            app.formarInformacion( resultados );
+                        }
+                    }else{
+                        app.formarInformacion( resultados );
+                    }
+                };
+
+                app.solicitarLectura = function( medidor ){
+                    var dMedidor = '<span class="text-danger">' + medidor.medidor + '</span>'
+                    document.getElementById('dMedidor').innerHTML = dMedidor
+                    var lMensaje = 'Ingrese lectura ≥ '+medidor.anterior+' m&sup3; ';
+                    document.getElementById('lMensaje').innerHTML = lMensaje
+                    app.inputLectura.value = ''
+                    app.formIngresar.style.display = 'block'
+
+                };
+
+                app.formarInformacion = function(resultados){
+                    var longitud = resultados.rows.length;
+                    var info = '';
+                    for (var i = 0; i < longitud; i++) {
+                        var medidor = resultados.rows.item(i);
+                        var datos = {
+                            medidor   : medidor.medidor,
+                            residente : medidor.residente,
+                            anterior  : medidor.anterior + ' m&sup3;',
+                            actual    : (medidor.actual == -1) ? '- - -' : medidor.actual +' m&sup3;',
+                            consumo   : (medidor.actual == -1) ? '- - -' : (medidor.actual-medidor.anterior) +' m&sup3;',
+                            timeFecha : (medidor.timestamp == -1) ? '- - -' : app.formatoFecha(medidor.timestamp),
+                            timeHora  : (medidor.timestamp == -1) ? '- - -' : app.formatoHora(medidor.timestamp),
+                            promedio  : medidor.promedio +' m&sup3;',
+                            boton     : '<a class="editar" onclick="app.editarLectura('+medidor.fk+')">EDITAR</a>'
+                        };
+                        info += app.dibujarInformacion( datos );
+                    }
+                    app.datosMedidor.innerHTML = info;
+                    app.datosMedidor.style.display = 'block'
+                    app.buttonScan.style.display = 'block'
+
+                };
+
+                app.dibujarInformacion = function( datos ){
+                    var info = '<table border="1">';
+                        info += '<tr><td colspan="4"><b><span class="red">'+datos.medidor+'</span> - '+datos.residente+'</b></td></tr>';
+                        info += '<tr><td><b>Anterior:</b></td><td class="right">'+datos.anterior+'</td>'
+                        info += '   <td><b>Fecha:</td><td class="right">'+datos.timeFecha+'</td></tr>'
+                        info += '<tr><td><b>Actual:</b></td><td class="right">'+datos.actual+'</td>';
+                        info += '   <td><b>Hora:</td><td class="right">'+datos.timeHora+'</td></tr>'
+                        info += '<tr><td><b>Consumo:</b></td><td class="right">'+datos.consumo+'</td>'
+                        info += '   <td class="center" colspan="2">'+datos.boton+'</td></tr>'
+                        info += '</table><br>';
+                    return info;
+                };
+
+                app.insertarLectura = function(medidor, lectura){
+                    app.db.transaction(function(tx){
+                        var timestamp = app.fechaActual();
+                        tx.executeSql('UPDATE lecturas SET actual = ?, timestamp = ?, modificado = ? WHERE fk = ?;',[ lectura, timestamp, 1,  medidor.fk ], function(){
+                            storeObject.medidorAsignado = ''
+                            app.buscarMedidor( medidor.medidor )
+                        });
+                    }, app.errorSQL);
+                };
+
+                app.editarLectura = function( fk ){
+                    app.datosMedidor.style.display = 'none'
+                    app.buttonScan.style.display = 'none'
+                    app.inputLectura.value = ''
+                    fk = fk.toString();
+                    app.db.transaction(function(tx){
+                        tx.executeSql('SELECT * FROM lecturas WHERE fk = ?;', [fk], function(tx, results){
+                            app.solicitarLectura( results.rows.item(0) );
+                        });
+                    }, app.errorSQL);
+                };
+
+                document.addEventListener('backbutton', function(){
+                    /*if( localStorage.scanner == null ){
+                        localStorage.setItem('scanner', 'false');
+                        window.history.back();
+                    }
+                    window.history.back();
+                    */
+                },true);
+
+                document.addEventListener('deviceready', function(){
+                    if('addEventListener' in document){
+                        app.iniciar();
+                    }
+                }, false);
+            </script>
+        </div>
+    </body>
+</html>

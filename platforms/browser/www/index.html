@@ -18,7 +18,6 @@
         <script type="text/javascript" src="js/jquery.swipebox.js"></script>
         <script type="text/javascript" src="js/jquery.mobile-custom.js"></script>
         <script type="text/javascript" src="cordova.js"></script>
-        <script type="text/javascript" src="js/index.js"></script>
 	</head>
 	<body>
 		<div data-role="page" id="homepage" data-theme="b">
@@ -36,13 +35,28 @@
 				<nav class="main-nav">
 					<ul>
 						<li>
-		                    <a href="tomar_lectura.html" data-transition="slidefade"><img src="images/icons/white/team.png" alt="" title="" /><span>Scanear</span></a>
+		                    <a href="bajar.html" data-transition="slidefade">
+		                    	<img src="images/icons/white/download.png" />
+		                    	<span>Bajar lecturas</span>
+		                    </a>
+		                </li>
+						<li>
+		                    <a href="scanear.html" data-transition="slidefade">
+		                    	<img src="images/icons/white/photos.png" />
+		                    	<span>Scanear</span>
+		                    </a>
 		                </li>
 		                <li>
-		                    <a href="lecturas.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Lecturas</span></a>
+		                    <a href="lista.html" data-transition="slidefade">
+		                    	<img src="images/icons/white/toggle.png" />
+		                    	<span>Lista de lecturas</span>
+		                    </a>
 		                </li>
 		                <li>
-		                    <a href="sincronizar.html" data-transition="slidefade"><img src="images/icons/white/settings.png" alt="" title="" /><span>Sincronizar</span></a>
+		                    <a href="subir.html" data-transition="slidefade">
+		                    	<img src="images/icons/white/responsive.png" />
+		                    	<span>Subir lecturas</span>
+		                    </a>
 		                </li>
 					</ul>
 				</nav>
@@ -50,80 +64,57 @@
 			<div data-role="panel" id="right-panel" data-display="reveal" data-position="right">
 				<div class="user_login_info">
                     <div class="user_details">
-                        <p id="nombreUsuario"></p>
+                        <p id="nombreUsuario1"></p>
                     </div>
                     <nav class="user-nav">
                         <ul>
-                            <li><a href="features.html"><img src="images/icons/white/settings.png" /><span>Configuración</span></a></li>
-                            <li><a href="#" onclick="app.salir()"><img src="images/icons/white/lock.png" /><span>Salir</span></a></li>
+                            <li><a href="#" onclick="app.logout()"><img src="images/icons/white/user.png" /><span>Cerrar sesión</span></a></li>
+                            <li><a href="#" onclick="app.exit()"><img src="images/icons/white/lock.png" /><span>Salir</span></a></li>
                         </ul>
                     </nav>
                 </div>
 				<div class="close_loginpopup_button"><a href="#" data-rel="close"><img src="images/icons/white/menu_close.png" alt="" title="" /></a></div>  
 			</div>
+			<script type="text/javascript" src="js/index.js"></script>
 			<script type="text/javascript">
 
-				var app = {
+				var app = Object.create(application);
 
-					db : 
-						window.openDatabase('LecturasAppDB.db', '1.0', 'LecturasAppDB', 200000)
-					,
-
-					nombreUsuario :
-						document.getElementById('nombreUsuario')
-					,
-
-					iniciar : function(){
-						app.db.transaction(app.crearTablas, app.error, app.consultarUsuario );
-					},
-
-					crearTablas : function(tx){
-						//tx.executeSql('DROP TABLE fraccionamientos');
-						//tx.executeSql('DROP TABLE zonas');
-						//tx.executeSql('DROP TABLE lecturas');
-						
-						tx.executeSql('CREATE TABLE IF NOT EXISTS fraccionamientos (id, nombre)');
-				        tx.executeSql('CREATE TABLE IF NOT EXISTS zonas (id, fracc_id, nombre)');
-						tx.executeSql('CREATE TABLE IF NOT EXISTS lecturas (fk, zona_id, medidor, residente, promedio, anterior, actual, fecha, modificado)');
-						tx.executeSql('CREATE TABLE IF NOT EXISTS usuario (token, nombre, teclado)');
-				    },
-
-				    consultarUsuario : function(){
-				    	app.db.transaction(function(tx){
-				    		tx.executeSql('SELECT * FROM usuario WHERE rowid = ?;',['1'],function(tx,result){
-				    			
-				    			if( result.rows.length == 1 ){
-				    				var usuario = result.rows.item(0);
-				    				app.nombreUsuario.innerHTML = usuario.nombre; 
-				    			}else{
-				    				location.href = 'login.html'
-				    			}
-
-				    		});
-				    	}, app.error, app.exito);
-				    },
-
-					exito : function(){
-						//alert('Base de Datos iniciada');
-					},
-
-					error : function(e){
-						alert('Sucedió un error. Código ' + e.code + ': '+ e.message);
-					},
-
-					salir : function(){
-						navigator.app.exitApp();
-					}
-
+				app.iniciar = function(){
+					app.db.transaction(app.iniciarBD, app.errorSQL, function(){
+						app.verificarSesion( document.getElementById('nombreUsuario1') )
+					});
 				};
+
+				app.iniciarBD = function(tx){
+
+					//tx.executeSql('DROP TABLE fraccionamientos');
+					//tx.executeSql('DROP TABLE zonas');
+					//tx.executeSql('DROP TABLE lecturas');
+					//tx.executeSql('DROP TABLE bitacora');
+
+					tx.executeSql('CREATE TABLE IF NOT EXISTS fraccionamientos (id, nombre)');
+			        tx.executeSql('CREATE TABLE IF NOT EXISTS zonas (id, fracc_id, nombre)');
+					tx.executeSql('CREATE TABLE IF NOT EXISTS lecturas (fk, zona_id, medidor, residente, promedio, anterior, actual, timestamp, modificado)');
+					tx.executeSql('CREATE TABLE IF NOT EXISTS usuario (token, nombre, teclado)');
+					tx.executeSql('CREATE TABLE IF NOT EXISTS bitacora (last_sync_download, last_sync_upload)',[],function(tx,result){
+						if( result.rows.length == 0 ){
+							tx.executeSql('INSERT INTO bitacora (last_sync_download, last_sync_upload) VALUES ("","")');
+						}
+					});
+			    };
 
 				document.addEventListener('deviceready', function(){
 					if('addEventListener' in document){
 						app.iniciar();
 					}
 				}, false);
-
 			</script>
 		</div>
+        <script type="text/javascript">
+            var storeObject = {
+			    medidorAsignado : ''
+			}
+    	</script>
 	</body>
 </html>

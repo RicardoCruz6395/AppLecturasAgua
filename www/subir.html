@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, minimum-scale=1, user-scalable=no, minimal-ui">
+        <meta name="apple-mobile-web-app-capable" content="yes">
+        <meta name="apple-mobile-web-app-status-bar-style" content="black">
+        <link rel="apple-touch-icon" href="images/apple-touch-icon.png" />
+        <link rel="apple-touch-startup-image" media="(device-width: 320px) and (device-height: 568px) and (-webkit-device-pixel-ratio: 2)" href="images/apple-touch-startup-image-640x1096.png">
+        <meta http-equiv="Content-Security-Policy" content="default-src *; img-src 'self' data:; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'">
+        <title>ACD Lecturas</title>
+        <link type="text/css" rel="stylesheet" href="css/themes/default/jquery.mobile-1.4.5.css" />
+        <link type="text/css" rel="stylesheet" href="style.css" />
+        <link type="text/css" rel="stylesheet" href="css/colors/blue.css" />
+        <link type="text/css" rel="stylesheet" href="css/swipebox.css" />
+        <script type="text/javascript" src="js/jquery.min.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-1.4.5.min.js"></script>
+        <script type="text/javascript" src="js/jquery.swipebox.js"></script>
+        <script type="text/javascript" src="js/jquery.mobile-custom.js"></script>
+        <script type="text/javascript" src="cordova.js"></script>
+    </head>
+    <body>
+        <div data-role="page" id="subir" class="secondarypage" data-theme="b">
+            <div data-role="header" data-position="fixed">
+                <div class="nav_left_button"><a href="#" class="nav-toggle"><span></span></a></div>
+                <div class="nav_center_logo">SUBIR</div>
+                <div class="nav_right_button"><a href="#right-panel"><img src="images/icons/white/user.png" alt="" title="" /></a></div>
+                <div class="clear"></div>
+            </div>
+            <div role="main" class="ui-content">
+                <div class="pages_maincontent">
+                    <div class="form_logo">Subir lecturas al sistema</div>
+                    <div class="page_content"> 
+                        <button id="appSistema" class="form_submit">
+                            <center>
+                                <img src="images/icons/white/responsive.png" id="upload" />
+                                <img src="images/loader.gif" id="loader" style="display: none" />
+                            </center>
+                        </button>
+                        <span id="last_sync_upload"></span>
+                    </div>
+                </div>
+            </div>
+            <div data-role="panel" id="left-panel" data-display="reveal" data-position="left">
+                <nav class="main-nav">
+                    <ul>
+                        <li>
+                            <a href="bajar.html" data-transition="slidefade">
+                                <img src="images/icons/white/download.png" />
+                                <span>Bajar lecturas</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="scanear.html" data-transition="slidefade">
+                                <img src="images/icons/white/photos.png" />
+                                <span>Scanear</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="lista.html" data-transition="slidefade">
+                                <img src="images/icons/white/toggle.png" />
+                                <span>Lista de lecturas</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a href="subir.html" data-transition="slidefade">
+                                <img src="images/icons/white/responsive.png" />
+                                <span>Subir lecturas</span>
+                            </a>
+                        </li>
+                    </ul>
+                    </ul>
+                </nav>
+            </div>
+            <div data-role="panel" id="right-panel" data-display="reveal" data-position="right">
+                <div class="user_login_info">
+                    <div class="user_details">
+                        <p id="nombreUsuario5"></p>
+                    </div>
+                    <nav class="user-nav">
+                        <ul>
+                            <li><a href="#" onclick="app.logout()"><img src="images/icons/white/user.png" /><span>Cerrar sesión</span></a></li>
+                            <li><a href="#" onclick="app.exit()"><img src="images/icons/white/lock.png" /><span>Salir</span></a></li>
+                        </ul>
+                    </nav>
+                </div>
+                <div class="close_loginpopup_button"><a href="#" data-rel="close"><img src="images/icons/white/menu_close.png" alt="" title="" /></a></div>  
+            </div>
+            <script type="text/javascript" src="js/index.js"></script>
+            <script type="text/javascript">
+
+                var app = Object.create(application);
+
+                app.botonAppSistema = document.getElementById('appSistema')
+                app.imgUpload       = document.getElementById('upload')
+                app.imgLoader       = document.getElementById('loader')
+
+                app.iniciar = function(){
+                    app.verificarSesion( document.getElementById('nombreUsuario5') );
+                    app.ultimaSincronizacion('last_sync_upload', document.getElementById('last_sync_upload') );
+                    app.botonAppSistema.addEventListener('click', app.confirmarSincronizacion);
+                };
+
+                app.cambiarBoton = function(){
+                    app.botonAppSistema.disabled = !app.botonAppSistema.disabled;
+                };
+
+                app.confirmarSincronizacion = function(){
+                    if( app.checarConexion() ){
+                        app.db.transaction( function(tx){
+                            tx.executeSql('SELECT * FROM lecturas WHERE modificado = ?;',[1],function(tx, modificadas){
+                                var detectadas = modificadas.rows.length;
+                        
+                                navigator.notification.beep(1);
+                                app.vibrar();
+                                if( detectadas == 0 ){
+                                    navigator.notification.alert('No hay lecturas modificadas para subir al sistema.',function(){},'¡ ATENCIÓN !', 'Aceptar');
+                                    return false;
+                                }
+
+                                mensaje = 'Se subirán al sistema ' + detectadas + ' lecturas modificadas.'
+                                if( detectadas == 1 )
+                                    mensaje = 'Se subirá al sistema 1 lectura modificada.'
+
+                                navigator.notification.confirm( mensaje + ' ¿Continuar?', app.sincronizarAppSistema,'¡ ATENCIÓN !', ['Aceptar','Cancelar']);
+                            });
+                        }, app.errorSQL);
+                    }
+                };
+
+                app.sincronizarAppSistema = function(btn){
+                    /* btn : 1 -> ok, 2 -> cancel */
+                    if( btn == 1 ){
+                        app.db.transaction(function(tx){
+                            tx.executeSql('SELECT token FROM usuario WHERE rowid = ?;',[1],function(tx, token){
+                                token = token.rows.item(0).token;
+                                datos = { _action : 2, _token : token }
+
+                                tx.executeSql('SELECT * FROM lecturas WHERE modificado = ?;',[1],function(tx, modificadas){
+                                    var detectadas = modificadas.rows.length;
+                                    datos.m = '{';
+
+                                    for (var i = 0; i < detectadas; i++) {
+                                        var medidor = modificadas.rows.item(i);
+                                        fk = medidor.fk;
+                                        actual = medidor.actual;
+                                        time = medidor.timestamp;
+                                        datos.m += '"' + fk + '":{'
+                                        datos.m += '"0":' + actual +","
+                                        datos.m += '"1":' + time +"}"
+
+                                        if( i < (detectadas-1) ){
+                                            datos.m += ','
+                                        }
+                                    }
+                                    datos.m += '}'
+                                        
+                                    var request = $.ajax({
+                                        type: 'POST',
+                                        crossDomain: true,
+                                        url: 'http://app.acd.mx/',
+                                        data : datos,
+                                        beforeSend : function(){
+                                            app.cambiarBoton()
+                                            app.imgUpload.style.display = 'none'
+                                            app.imgLoader.style.display = 'block'
+                                        },
+                                        success : app.subidaTerminada
+                                    });
+
+                                    request.fail(function (jqXHR, textStatus, errorThrown){
+                                        alert('Error en petición: ' + textStatus);
+                                        app.imgLoader.style.display = 'none'
+                                        app.imgUpload.style.display = 'block'
+                                        app.cambiarBoton();
+                                    });
+                                });
+                            });
+                        }, app.errorSQL);
+                    }
+                };
+
+                app.subidaTerminada = function(data){
+                    if( data.request ){
+                        app.actualizarUltimaSincronizacion('last_sync_upload');
+                        navigator.notification.alert('Se subieron ' + data.cantidad + ' lecturas correctamente', function(){
+                            app.db.transaction(function(tx){
+                                tx.executeSql('UPDATE lecturas SET modificado = ?;',[0],function(tx,result){
+                                    app.imgLoader.style.display = 'none'
+                                    app.imgUpload.style.display = 'block'
+                                    app.cambiarBoton();
+                                })
+                            }, app.errorSQL);
+                        }, 'ÉXITO', 'Aceptar');
+                    }else{
+                        app.vibrar();
+                        navigator.notification.beep(1);
+                        navigator.notification.alert('Ocurrió un error. ' + data , function(){},'¡ ATENCIÓN !','Aceptar')
+                    }
+                };
+
+                document.addEventListener('deviceready', function(){
+                    if('addEventListener' in document){
+                        app.iniciar();
+                    }
+                }, false);
+            </script>
+        </div>
+    </body>
+</html>

@@ -21,6 +21,9 @@
         },
         "phonegap-plugin-barcodescanner": {
             "PACKAGE_NAME": "mx.acd.app"
+        },
+        "cordova-plugin-x-toast": {
+            "PACKAGE_NAME": "mx.acd.app"
         }
     },
     "dependent_plugins": {

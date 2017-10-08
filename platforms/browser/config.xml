@@ -1,22 +1,23 @@
 <?xml version='1.0' encoding='utf-8'?>
-<!--
-       Licensed to the Apache Software Foundation (ASF) under one
-       or more contributor license agreements.  See the NOTICE file
-       distributed with this work for additional information
-       regarding copyright ownership.  The ASF licenses this file
-       to you under the Apache License, Version 2.0 (the
-       "License"); you may not use this file except in compliance
-       with the License.  You may obtain a copy of the License at
-
-         http://www.apache.org/licenses/LICENSE-2.0
-
-       Unless required by applicable law or agreed to in writing,
-       software distributed under the License is distributed on an
-       "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
-       KIND, either express or implied.  See the License for the
-       specific language governing permissions and limitations
-       under the License.
--->
-<widget id="io.cordova.hellocordova" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
-
+<widget id="mx.acd.app" version="1.1.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0" xmlns:gap="http://phonegap.com/ns/1.0">
+    <feature name="BarcodeScanner">
+        <param name="browser-package" value="BarcodeScanner" />
+    </feature>
+    <name>ACD Lecturas</name>
+    <description>
+        Aplicación para la toma de lecturas de agua
+    </description>
+    <author email="control.sistemas77@gmail.com" href="http://acd.mx">
+        Control de Sistemas ACD
+    </author>
+    <content src="index.html" />
+    <icon gap:platform="android" gap:qualifier="ldpi" src="icons/36.png" />
+    <icon gap:platform="android" gap:qualifier="mdpi" src="icons/48.png" />
+    <icon gap:platform="android" gap:qualifier="hdpi" src="icons/72.png" />
+    <icon gap:platform="android" gap:qualifier="xhdpi" src="icons/96.png" />
+    <icon gap:platform="android" gap:qualifier="xxhdpi" src="icons/144.png" />
+    <allow-intent href="market:*" />
+    <access origin="*" />
+    <allow-intent href="*" />
+    <allow-navigation href="*" />
 </widget>
